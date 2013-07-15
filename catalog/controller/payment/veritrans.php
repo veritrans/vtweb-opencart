@@ -94,9 +94,6 @@ class ControllerPaymentVeritrans extends Controller {
 			return false;
 		}
 
-		$this->config->set('TOKEN_MERCHANT', $this->data['key']['token_merchant']);
-		$this->config->set('ORDER_ID', $order_info['order_id']);
-
 		//save order
 		$dataToken = array(
 		'order_id'    => $order_info['order_id'],
