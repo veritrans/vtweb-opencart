@@ -80,9 +80,9 @@ class ControllerPaymentVeritrans extends Controller {
 
 		$veritrans->commodity = $commodities;
 
-		// $veritrans->finish_payment_return_url = $this->url->link('checkout/success');
-		// $veritrans->unfinish_payment_return_url = $this->url->link('checkout/cart');
-		// $veritrans->error_payment_return_url = $this->url->link('checkout/cart');
+    $veritrans->finish_payment_return_url = $this->url->link('checkout/success');
+    $veritrans->unfinish_payment_return_url = $this->url->link('checkout/cart');
+    $veritrans->error_payment_return_url = $this->url->link('checkout/cart');
 
 		$this->data['key'] = $veritrans->get_keys();
 
