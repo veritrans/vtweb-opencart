@@ -25,9 +25,11 @@ class ControllerPaymentVeritrans extends Controller {
 		$this->data['bill_country'] = $order_info['payment_country'];
 		$this->data['bill_tel'] = $order_info['telephone'];
 		$this->data['bill_email'] = $order_info['email'];
-
+		$veritrans = new Veritrans;
 		if ($this->cart->hasShipping()) {
 			$this->data['ship_name'] = $order_info['shipping_firstname'] . ' ' . $order_info['shipping_lastname'];
+			$veritrans->shipping_first_name =$order_info['shipping_firstname'];
+			$veritrans->shipping_last_name = $order_info['shipping_lastname'];
 			$this->data['ship_addr_1'] = $order_info['shipping_address_1'];
 			$this->data['ship_addr_2'] = $order_info['shipping_address_2'];
 			$this->data['ship_city'] = $order_info['shipping_city'];
@@ -35,15 +37,17 @@ class ControllerPaymentVeritrans extends Controller {
 			$this->data['ship_post_code'] = $order_info['shipping_postcode'];
 			$this->data['ship_country'] = $order_info['shipping_country'];
 		} else {
-			$this->data['ship_name'] = '';
-			$this->data['ship_addr_1'] = '';
-			$this->data['ship_addr_2'] = '';
-			$this->data['ship_city'] = '';
-			$this->data['ship_state'] = '';
-			$this->data['ship_post_code'] = '';
-			$this->data['ship_country'] = '';
+			$this->data['ship_name'] = $order_info['payment_firstname'] . ' ' . $order_info['payment_lastname'];
+			$veritrans->shipping_first_name =$order_info['payment_firstname'];
+			$veritrans->shipping_last_name = $order_info['payment_lastname'];
+			$this->data['ship_addr_1'] = $order_info['payment_address_1'];
+			$this->data['ship_addr_2'] = $order_info['payment_address_2'];
+			$this->data['ship_city'] = $order_info['payment_city'];
+			$this->data['ship_state'] = $order_info['payment_zone'];
+			$this->data['ship_post_code'] = $order_info['payment_postcode'];
+			$this->data['ship_country'] = $order_info['payment_country'];
 		}
-		$veritrans = new Veritrans;
+		
 		$veritrans->merchant_id = $this->data['merchant'];
 		$veritrans->merchant_hash_key = $this -> data['hash'];
 		$veritrans->order_id = $this->session->data['order_id'];
@@ -51,8 +55,7 @@ class ControllerPaymentVeritrans extends Controller {
 		$veritrans->required_shipping_address = '0';
 		$veritrans->billing_address_different_with_shipping_address = '1';
 		$veritrans->required_shipping_address = '1';
-		$veritrans->shipping_first_name =$order_info['shipping_firstname'];
-		$veritrans->shipping_last_name = $order_info['shipping_lastname'];
+		
 		$veritrans->shipping_address1 = $this->data['ship_addr_1'];
 		$veritrans->shipping_address2 = $this->data['ship_addr_2'];
 		$veritrans->shipping_city = $this->data['ship_city'];
@@ -60,30 +63,35 @@ class ControllerPaymentVeritrans extends Controller {
 		$veritrans->shipping_postal_code = $this->data['ship_post_code'];
 		$veritrans->shipping_phone = $this->data['bill_tel'];
 		$veritrans->billing_address_different_with_shipping_address = '0';
-		$veritrans->gross_amount = (int)$this->data['amount'];
+		$veritrans->gross_amount = number_format($this->data['amount'],0,'','');
 
 		$commodities = array();
 		foreach ($products as $product){
+		if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+			$product['price']=number_format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')),0,'','');
+		}
 		$commodity_item = array("COMMODITY_ID" => $product['key'],
-				"COMMODITY_PRICE" => $product['price'],
+				"COMMODITY_PRICE" => number_format($product['price'],0,'',''),
 				"COMMODITY_QTY" => $product['quantity'],
 				"COMMODITY_NAME1" => $product['name'],
 				"COMMODITY_NAME2" => $product['name']);
 				array_push($commodities, $commodity_item);
 		}
+		if ($this->cart->hasShipping()){
 		$shipping_fee= array("COMMODITY_ID" => "0",
 				"COMMODITY_PRICE" => $this->tax->calculate($this->config->get('flat_cost'), $this->config->get('flat_tax_class_id'), $this->config->get('config_tax')),
 				"COMMODITY_QTY" => 1,
 				"COMMODITY_NAME1" => "SHIPPING FEE",
 				"COMMODITY_NAME2" => "SHIPPING FEE");
 				array_push($commodities, $shipping_fee);
-
+		}
 		$veritrans->commodity = $commodities;
 
     $veritrans->finish_payment_return_url = $this->url->link('checkout/success');
     $veritrans->unfinish_payment_return_url = $this->url->link('checkout/cart');
     $veritrans->error_payment_return_url = $this->url->link('checkout/cart');
 
+		//print_r ($veritrans);
 		$this->data['key'] = $veritrans->get_keys();
 
 		# printout keys to browser
