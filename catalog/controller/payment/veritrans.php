@@ -1,7 +1,7 @@
 <?php
 class ControllerPaymentVeritrans extends Controller {
     private $order_id="";
-	protected function index() {
+		protected function index() {
 		require_once(DIR_SYSTEM.'library/veritrans/veritrans.php');
 		$this->load->model('payment/veritrans');
 		$products = $this->cart->getProducts();
@@ -66,32 +66,36 @@ class ControllerPaymentVeritrans extends Controller {
 		$veritrans->gross_amount = number_format($this->data['amount'],0,'','');
 
 		$commodities = array();
+
 		foreach ($products as $product){
-		if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-			$product['price']=number_format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')),0,'','');
+			if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+				$product['price']=number_format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')),0,'','');
+			}
+			$commodity_item = array("COMMODITY_ID" => $product['product_id'],
+															"COMMODITY_PRICE" => number_format($product['price'],0,'',''),
+															"COMMODITY_QTY" => $product['quantity'],
+															"COMMODITY_NAME1" => $product['name'],
+															"COMMODITY_NAME2" => $product['name']);
+			array_push($commodities, $commodity_item);
 		}
-		$commodity_item = array("COMMODITY_ID" => $product['key'],
-				"COMMODITY_PRICE" => number_format($product['price'],0,'',''),
-				"COMMODITY_QTY" => $product['quantity'],
-				"COMMODITY_NAME1" => $product['name'],
-				"COMMODITY_NAME2" => $product['name']);
-				array_push($commodities, $commodity_item);
-		}
+
 		if ($this->cart->hasShipping()){
-		$shipping_fee= array("COMMODITY_ID" => "0",
-				"COMMODITY_PRICE" => $this->tax->calculate($this->config->get('flat_cost'), $this->config->get('flat_tax_class_id'), $this->config->get('config_tax')),
-				"COMMODITY_QTY" => 1,
-				"COMMODITY_NAME1" => "SHIPPING FEE",
-				"COMMODITY_NAME2" => "SHIPPING FEE");
-				array_push($commodities, $shipping_fee);
+			$shipping_fee= array("COMMODITY_ID" => "0",
+					"COMMODITY_PRICE" => $this->tax->calculate($this->config->get('flat_cost'), $this->config->get('flat_tax_class_id'), $this->config->get('config_tax')),
+					"COMMODITY_QTY" => 1,
+					"COMMODITY_NAME1" => "SHIPPING FEE",
+					"COMMODITY_NAME2" => "SHIPPING FEE");
+					array_push($commodities, $shipping_fee);
 		}
+		
 		$veritrans->commodity = $commodities;
 
     $veritrans->finish_payment_return_url = $this->url->link('checkout/success');
     $veritrans->unfinish_payment_return_url = $this->url->link('checkout/cart');
     $veritrans->error_payment_return_url = $this->url->link('checkout/cart');
 
-		//print_r ($veritrans);
+		// print_r ($veritrans);
+
 		$this->data['key'] = $veritrans->get_keys();
 
 		# printout keys to browser

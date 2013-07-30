@@ -32,15 +32,3 @@ CREATE TABLE IF NOT EXISTS `tokens` (
   `token_browser` varchar(255) NOT NULL,
   KEY `order_id` (`order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `tokens`
---
-
-INSERT INTO `tokens` (`order_id`, `token_merchant`, `token_browser`) VALUES
-(199, 'JIEAAirRXKut1uJ6CSQNqUTykJA1b6lLaiVap4SAJ4796VBn9u', 'unRKA9maDFTQlkpBpX1kVO6g3V51FJDMnfzvbjrd7DZLMazTYQ'),
-(200, 'sJzzNI37TiAfjum93Rpf4MNH1Qmt8lMO6VBTpoGBnwkIrL2ObM', 'RdP46cWFgKUXRAJ2CLxsyHko9bwolMd8bVlusFd9mmpXIDPIBQ');
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
