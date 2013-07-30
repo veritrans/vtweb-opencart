@@ -1,7 +1,7 @@
 <?php
 class ControllerPaymentVeritrans extends Controller {
     private $order_id="";
-		protected function index() {
+	protected function index() {
 		require_once(DIR_SYSTEM.'library/veritrans/veritrans.php');
 		$this->load->model('payment/veritrans');
 		$products = $this->cart->getProducts();
@@ -27,7 +27,8 @@ class ControllerPaymentVeritrans extends Controller {
 		$this->data['bill_email'] = $order_info['email'];
 		$veritrans = new Veritrans;
 		if ($this->cart->hasShipping()) {
-			$this->data['ship_name'] = $order_info['shipping_firstname'] . ' ' . $order_info['shipping_lastname'];
+			$veritrans->required_shipping_address = '1';
+			$veritrans->billing_address_different_with_shipping_address = '1';
 			$veritrans->shipping_first_name =$order_info['shipping_firstname'];
 			$veritrans->shipping_last_name = $order_info['shipping_lastname'];
 			$this->data['ship_addr_1'] = $order_info['shipping_address_1'];
@@ -37,7 +38,8 @@ class ControllerPaymentVeritrans extends Controller {
 			$this->data['ship_post_code'] = $order_info['shipping_postcode'];
 			$this->data['ship_country'] = $order_info['shipping_country'];
 		} else {
-			$this->data['ship_name'] = $order_info['payment_firstname'] . ' ' . $order_info['payment_lastname'];
+			$veritrans->required_shipping_address = '0';
+			$veritrans->billing_address_different_with_shipping_address = '1';
 			$veritrans->shipping_first_name =$order_info['payment_firstname'];
 			$veritrans->shipping_last_name = $order_info['payment_lastname'];
 			$this->data['ship_addr_1'] = $order_info['payment_address_1'];
@@ -52,17 +54,23 @@ class ControllerPaymentVeritrans extends Controller {
 		$veritrans->merchant_hash_key = $this -> data['hash'];
 		$veritrans->order_id = $this->session->data['order_id'];
 		$veritrans->session_id = $this->session->data['order_id'];
-		$veritrans->required_shipping_address = '0';
-		$veritrans->billing_address_different_with_shipping_address = '1';
-		$veritrans->required_shipping_address = '1';
 		
+		$veritrans->first_name = $order_info['payment_firstname'];
+		$veritrans->last_name = $order_info['payment_lastname'];
+		$veritrans->address1 = $this->data['bill_addr_1'];
+		$veritrans->address2 = $this->data['bill_addr_2'];
+		$veritrans->city = $this->data['bill_city'];
+		$veritrans->country_code = $order_info['payment_iso_code_3'];
+		$veritrans->postal_code = $this->data['ship_post_code'];
+		$veritrans->phone = $this->data['bill_tel'];
+		$veritrans->email = $this->data['bill_email'];
+
 		$veritrans->shipping_address1 = $this->data['ship_addr_1'];
 		$veritrans->shipping_address2 = $this->data['ship_addr_2'];
 		$veritrans->shipping_city = $this->data['ship_city'];
 		$veritrans->shipping_country_code = $order_info['payment_iso_code_3'];
 		$veritrans->shipping_postal_code = $this->data['ship_post_code'];
 		$veritrans->shipping_phone = $this->data['bill_tel'];
-		$veritrans->billing_address_different_with_shipping_address = '0';
 		$veritrans->gross_amount = number_format($this->data['amount'],0,'','');
 
 		$commodities = array();
