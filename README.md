@@ -14,3 +14,4 @@ vtweb-opencart
 - Login to https://payments.veritrans.co.id/map/
 - Go to Settings -> VT-Web Configuration
 - Insert [your shop's homepage]/index.php?route=payment/veritrans/payment_notification into Payment Notification URL's field
+- Click Update
