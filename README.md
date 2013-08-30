@@ -9,3 +9,8 @@ vtweb-opencart
 - Import token.sql to your shop's database
 - Now you can install veritrans' payment module from your admin page
 - Insert Merchant ID, Merchant Hash Key, and set status Enabled on your veritrans form
+
+##Integrate Veritrans' Payment Notification
+- Login to https://payments.veritrans.co.id/map/
+- Go to Settings -> VT-Web Configuration
+- Insert [your shop's homepage]/index.php?route=payment/veritrans/payment_notification into Payment Notification URL's field
