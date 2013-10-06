@@ -23,6 +23,7 @@
               <span class="error"><?php echo $error_merchant; ?></span>
               <?php } ?></td>
           </tr>
+
           <tr>
             <td><span class="required">*</span> <?php echo $entry_hash; ?></td>
             <td><input type="text" name="veritrans_hash" value="<?php echo $veritrans_hash; ?>" />
@@ -30,7 +31,8 @@
               <span class="error"><?php echo $error_hash; ?></span>
               <?php } ?></td>
           </tr>
-               <tr>
+
+          <tr>
             <td><?php echo $entry_geo_zone; ?></td>
             <td><select name="veritrans_geo_zone_id">
                 <option value="0"><?php echo $text_all_zones; ?></option>
@@ -43,6 +45,7 @@
                 <?php } ?>
               </select></td>
           </tr>
+
           <tr>
             <td><?php echo $entry_status; ?></td>
             <td><select name="veritrans_status">
@@ -55,6 +58,7 @@
                 <?php } ?>
               </select></td>
           </tr>
+
           <tr>
             <td><?php echo $entry_sort_order; ?></td>
             <td><input type="text" name="veritrans_sort_order" value="<?php echo $veritrans_sort_order; ?>" size="1" /></td>
