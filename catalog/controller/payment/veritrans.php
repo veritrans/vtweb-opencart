@@ -176,7 +176,7 @@ class ControllerPaymentVeritrans extends Controller {
 			require_once(DIR_SYSTEM.'library/veritrans/veritrans.php');
 			$this->load->model('checkout/order');
 			$this->load->model('payment/veritrans');
-			$veritrans_notification = new VeritransNotification($_POST);
+			$veritrans_notification = new VeritransNotification();
 			$token_merchant=$this->model_payment_veritrans->getTokenMerchant($veritrans_notification->orderId);
 
 			// Verify the Merchant Key

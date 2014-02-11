@@ -4,20 +4,8 @@
 
 class VeritransNotification
 {
-  
-  private $postalcode;
   private $mStatus; 
-  private $phone; 
-  private $shippingPhone; 
-  private $mErrMsg; 
-  private $email; 
-  private $address; 
-  private $name;
-  private $vResultCode; 
-  private $shippingAddress;
   private $orderId;
-  private $shippingPostalcode;
-  private $shippingName;
   private $TOKEN_MERCHANT;
   
 
@@ -41,11 +29,14 @@ class VeritransNotification
 
   function __construct($params = null) 
   {
+    if(is_null($params)) {
+      $params = json_decode(file_get_contents('php://input')); 
+    }
+
     foreach($params as $key => $value){
       $this->$key = $value;
     }
   }
-
 
 }
 
