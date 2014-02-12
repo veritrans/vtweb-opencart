@@ -86,8 +86,8 @@ class ControllerPaymentVeritrans extends Controller {
 			$commodity_item = array("COMMODITY_ID" => $product['product_id'],
 															"COMMODITY_PRICE" => number_format($product['price'],0,'',''),
 															"COMMODITY_QTY" => $product['quantity'],
-															"COMMODITY_NAME1" => $product['name'],
-															"COMMODITY_NAME2" => $product['name']);
+															"COMMODITY_NAME1" => (substr($product['name'],0,17))."...",
+															"COMMODITY_NAME2" => (substr($product['name'],0,17))."...");
 			array_push($commodities, $commodity_item);
 			$productprice+=$product['price']*$product['quantity'];
 			//echo "product price ".$index++." = ".$productprice."<br>";
