@@ -2,16 +2,16 @@ vtweb-opencart
 ==============
 
 ##Opencart Veritrans integration library
-- Extract the vtweb-opencart-master.zip
-- Locate the main directory of your shop via FTP connection
-- Open vtweb-opencart-master folder. Inside this folder you will find four folders: admin, catalog, image & system. These are the folders that you will need to upload to install the extension
-- To install the extension, simply drag these four folders to your opencart root directory.
-- Import token.sql to your shop's database
-- Now you can install veritrans' payment module from your admin page
-- Insert Merchant ID, Merchant Hash Key, and set status Enabled on your veritrans form
 
-##Integrate Veritrans' Payment Notification
-- Login to https://payments.veritrans.co.id/map/
-- Go to Settings -> VT-Web Configuration
-- Insert [your shop's homepage]/index.php?route=payment/veritrans/payment_notification into Payment Notification URL's field
-- Click Update
+1 - Extract vtweb-opencart-master.zip
+
+2 - Locate the root opencart directory of your shop via FTP connection
+
+3 - Copy the 'admin', 'catalog', 'image' and 'system' folders into opencart root folder.
+
+4 - Import token.sql to your shop's database
+
+6 - In your opencart admin area, enable the Veritrans plug-in and insert your merchant details (Merchant ID and Merchant Hash Key)
+
+7 - Login into your Veritrans account and change the Payment Notification URL in Settings to http://[your shop's homepage]/index.php?route=payment/veritrans/payment_notification
+
