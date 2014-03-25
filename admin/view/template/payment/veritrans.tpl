@@ -136,6 +136,18 @@
           </tr>
           <!-- 3D Secure -->
 
+          <?php if (!$this->currency->has('IDR')): ?>
+            <tr>
+              <td><span class="required">*</span> <?php echo $entry_currency_conversion; ?></td>
+              <td><input type="text" name="veritrans_currency_conversion" value="<?php echo $veritrans_currency_conversion ?>" />
+                <?php if ($error_hash): ?>
+                  <span class="error"><?php echo $error_hash; ?></span>
+                <?php endif; ?>
+              </td>
+            </tr>
+          <?php endif ?>
+          <!-- Currency -->
+
           <tr>
             <td><?php echo $entry_geo_zone; ?></td>
             <td><select name="veritrans_geo_zone_id">

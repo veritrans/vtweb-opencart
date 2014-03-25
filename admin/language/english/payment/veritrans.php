@@ -24,7 +24,8 @@ $_['entry_order_status'] = 'Order Status:';
 $_['entry_geo_zone']     = 'Geo Zone:';
 $_['entry_status']       = 'Status:';
 $_['entry_sort_order']   = 'Sort Order:';
-$_['entry_enable_bank_installment'] = 'Enable BANK installment';
+$_['entry_enable_bank_installment'] = 'Enable BANK installments?';
+$_['entry_currency_conversion'] = 'Currency conversion to IDR';
 
 // Error
 $_['error_permission']   = 'Warning: You do not have permission to modify payment SagePay!';

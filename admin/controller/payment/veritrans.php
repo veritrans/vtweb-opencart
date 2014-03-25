@@ -42,6 +42,7 @@ class ControllerPaymentVeritrans extends Controller {
 			'entry_3d_secure',
 			'entry_payment_type',
 			'entry_enable_bank_installment',
+			'entry_currency_conversion',
 
 			'button_save',
 			'button_cancel'
@@ -106,7 +107,8 @@ class ControllerPaymentVeritrans extends Controller {
 			'veritrans_sort_order',
 			'veritrans_3d_secure',
 			'veritrans_payment_type',
-			'veritrans_installment_terms'
+			'veritrans_installment_terms',
+			'veritrans_currency_conversion'
 			);
 
 		foreach ($inputs as $input) {
