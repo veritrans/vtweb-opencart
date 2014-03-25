@@ -52,9 +52,11 @@
           <tr class="v2_settings">
             <td><span class="required">*</span> <?php echo $entry_environment; ?></td>
             <td>
-              <select name="veritrans_environment" value="<?php echo $veritrans_environment; ?>">
-                <option value="1">Development</option>
-                <option value="2">Production</option>
+              <select name="veritrans_environment">
+                <?php $options = array('development' => 'Development', 'production' => 'Production') ?>
+                <?php foreach ($options as $key => $value): ?>
+                  <option value="<?php echo $key ?>" <?php if ($key == $veritrans_environment) echo 'selected' ?> ><?php echo $value ?></option>  
+                <?php endforeach ?>
               </select>
               <?php if ($error_merchant): ?>
                 <span class="error"><?php echo $error_merchant; ?></span>

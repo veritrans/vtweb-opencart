@@ -1,6 +1,9 @@
 <?php
+
 class ModelPaymentVeritrans extends Model {
-  	public function getMethod($address, $total) {
+  
+  public function getMethod($address, $total) {
+		
 		$this->language->load('payment/veritrans');
 
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "zone_to_geo_zone WHERE geo_zone_id = '" . (int)$this->config->get('veritrans_geo_zone_id') . "' AND country_id = '" . (int)$address['country_id'] . "' AND (zone_id = '" . (int)$address['zone_id'] . "' OR zone_id = '0')");
@@ -18,15 +21,15 @@ class ModelPaymentVeritrans extends Model {
 		$method_data = array();
 
 		if ($status) {
-      		$method_data = array(
-        		'code'       => 'veritrans',
-        		'title'      => $this->language->get('text_title'),
+      $method_data = array(
+        'code'       => 'veritrans',
+        'title'      => $this->language->get('text_title'),
 				'sort_order' => $this->config->get('veritrans_sort_order')
-      		);
-    	}
+      );
+    }
 
-    	return $method_data;
-  	}
+    return $method_data;
+  }
 
 	public function addToken($data){
 		$this->db->query("INSERT INTO `tokens` SET order_id = '" . $data['order_id'] . "', token_merchant = '" .$data['token_merchant']. "', token_browser = '" . $data['token_browser'] . "'");
@@ -54,4 +57,3 @@ class ModelPaymentVeritrans extends Model {
 		return $token_browser;
 	}
 }
-?>

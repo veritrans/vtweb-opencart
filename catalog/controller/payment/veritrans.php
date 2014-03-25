@@ -134,24 +134,37 @@ class ControllerPaymentVeritrans extends Controller {
     $veritrans->unfinish_payment_return_url = $this->url->link('checkout/cart');
     $veritrans->error_payment_return_url = $this->url->link('checkout/cart');
 
+    $veritrans->version = $this->config->get('veritrans_api_version');
+    if ($veritrans->version == 2)
+    {
+    	if ($this->config->get('veritrans_environment') == 'production')
+    	{
+    		$veritrans->environment = Veritrans::ENVIRONMENT_PRODUCTION;	
+    	} else
+    	{
+    		$veritrans->environment = Veritrans::ENVIRONMENT_DEVELOPMENT;	
+    	}    	
+    	$veritrans->server_key = $this->config->get('veritrans_server_key');
+    }
+
 		// print_r ($veritrans);
 		$this->data['key'] = $veritrans->getTokens();
-
-		# printout keys to browser
-		//var_dump($this->data['key']);
 
 		if(isset($this->data['key']['error_message'])) {
 			echo $this->data['key']['error_message'];
 			return false;
 		}
 
-		//save order
-		$dataToken = array(
-		'order_id'    => $order_info['order_id'],
-		'token_browser' => $this->data['key']['token_browser'],
-		'token_merchant'=> $this->data['key']['token_merchant']
-		);
-		$this->model_payment_veritrans->addToken($dataToken);
+		// save order
+		if ($this->config->get('veritrans_api_version') == 1)
+		{
+			$dataToken = array(
+				'order_id' => $order_info['order_id'],
+				'token_browser' => $this->data['key']['token_browser'],
+				'token_merchant'=> $this->data['key']['token_merchant']
+			);
+			$this->model_payment_veritrans->addToken($dataToken);
+		}
 
 		switch ($this->config->get('veritrans_test')) {
 			case 'live':
@@ -167,6 +180,7 @@ class ControllerPaymentVeritrans extends Controller {
 		}
 
 		$this->data['options'] = 'test_status=' . $status . ',dups=false,cb_post=false';
+		$this->data['veritrans'] = $veritrans;
 
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/veritrans.tpl')) {
 			$this->template = $this->config->get('config_template') . '/template/payment/veritrans.tpl';
@@ -177,35 +191,34 @@ class ControllerPaymentVeritrans extends Controller {
 		$this->render();
 	}
 
+  public function payment_notification()
+  {
+		require_once(DIR_SYSTEM.'library/veritrans/veritrans.php');
+		$this->load->model('checkout/order');
+		$this->load->model('payment/veritrans');
+		$veritrans_notification = new VeritransNotification();
+		$token_merchant=$this->model_payment_veritrans->getTokenMerchant($veritrans_notification->orderId);
 
-	   public function payment_notification()
-	   {
-			require_once(DIR_SYSTEM.'library/veritrans/veritrans.php');
-			$this->load->model('checkout/order');
-			$this->load->model('payment/veritrans');
-			$veritrans_notification = new VeritransNotification();
-			$token_merchant=$this->model_payment_veritrans->getTokenMerchant($veritrans_notification->orderId);
+		// Verify the Merchant Key
+		if($token_merchant != $veritrans_notification->TOKEN_MERCHANT){
+		  echo "ERR";
+		  exit();
+		}
 
-			// Verify the Merchant Key
-			if($token_merchant != $veritrans_notification->TOKEN_MERCHANT){
-			  echo "ERR";
-			  exit();
-			}
+		// Check transaction result
 
-			// Check transaction result
+		if($veritrans_notification->mStatus == 'success'){
+		  $this->model_checkout_order->confirm($veritrans_notification->orderId,5,'success');
+		  echo "OK ";
+		  exit;
 
-			if($veritrans_notification->mStatus == 'success'){
-			  $this->model_checkout_order->confirm($veritrans_notification->orderId,5,'success');
-			  echo "OK ";
-			  exit;
-
-			}
-			 else
-			{
-			  $this->model_checkout_order->confirm($veritrans_notification->orderId,10,'failed');
-			  echo "FAIL";
-			  exit;
-			}
-	   }
+		}
+		 else
+		{
+		  $this->model_checkout_order->confirm($veritrans_notification->orderId,10,'failed');
+		  echo "FAIL";
+		  exit;
+		}
+  }
 }
 
