@@ -108,7 +108,8 @@ class ControllerPaymentVeritrans extends Controller {
 			'veritrans_3d_secure',
 			'veritrans_payment_type',
 			'veritrans_installment_terms',
-			'veritrans_currency_conversion'
+			'veritrans_currency_conversion',
+			'veritrans_status'
 			);
 
 		foreach ($inputs as $input) {

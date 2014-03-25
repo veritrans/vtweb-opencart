@@ -26,13 +26,10 @@
           <tr>
             <td><?php echo $entry_status; ?></td>
             <td><select name="veritrans_status">
-                <?php if ($veritrans_status) { ?>
-                <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
-                <option value="0"><?php echo $text_disabled; ?></option>
-                <?php } else { ?>
-                <option value="1"><?php echo $text_enabled; ?></option>
-                <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
-                <?php } ?>
+              <?php $options = array('1' => $text_enabled, '0' => $text_disabled) ?>
+              <?php foreach ($options as $key => $value): ?>
+                <option value="<?php echo $key ?>" <?php if ($key == $veritrans_status) echo 'selected' ?> ><?php echo $value ?></option>
+              <?php endforeach ?>
               </select></td>
           </tr>
           <!-- Status -->
