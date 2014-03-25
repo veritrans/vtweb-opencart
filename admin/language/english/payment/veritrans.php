@@ -11,8 +11,11 @@ $_['text_successful']    = 'Always Successful';
 $_['text_fail']          = 'Always Fail';
 
 // Entry
-$_['entry_merchant']     = 'Merchant ID:';
-$_['entry_hash']     	 = 'Merchant Hash Key';
+$_['entry_api_version']  = 'API Version';
+$_['entry_environment']  = 'Environment'; // v2 API only
+$_['entry_merchant']     = 'Merchant ID:'; // v1 API only
+$_['entry_hash']     	   = 'Merchant Hash Key'; // v1 API only
+$_['entry_server_key']   = 'Server Key'; // v2 API only
 $_['entry_test']         = 'Test Mode:';
 $_['entry_total']        = 'Total:<br /><span class="help">The checkout total the order must reach before this payment method becomes active.</span>';
 $_['entry_order_status'] = 'Order Status:';

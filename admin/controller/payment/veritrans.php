@@ -28,7 +28,10 @@ class ControllerPaymentVeritrans extends Controller {
 		$this->data['text_successful'] = $this->language->get('text_successful');
 		$this->data['text_fail'] = $this->language->get('text_fail');
 
+		$this->data['entry_api_version'] = $this->language->get('entry_api_version');
+		$this->data['entry_environment'] = $this->language->get('entry_environment');
 		$this->data['entry_merchant'] = $this->language->get('entry_merchant');
+		$this->data['entry_server_key'] = $this->language->get('entry_server_key');
 		$this->data['entry_hash'] = $this->language->get('entry_hash');
 		$this->data['entry_test'] = $this->language->get('entry_test');
 		$this->data['entry_total'] = $this->language->get('entry_total');
@@ -82,61 +85,34 @@ class ControllerPaymentVeritrans extends Controller {
 
 		$this->data['cancel'] = $this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL');
 
-		if (isset($this->request->post['veritrans_merchant'])) {
-			$this->data['veritrans_merchant'] = $this->request->post['veritrans_merchant'];
-		} else {
-			$this->data['veritrans_merchant'] = $this->config->get('veritrans_merchant');
-		}
+		$inputs = array(
+			'veritrans_api_version',
+			'veritrans_environment',
+			'veritrans_merchant',
+			'veritrans_hash',
+			'veritrans_server_key',
+			'veritrans_test',
+			'veritrans_total',
+			'veritrans_order_status_id',
+			'veritrans_geo_zone_id',
+			'veritrans_sort_order'
+			);
 
-		if (isset($this->request->post['veritrans_hash'])) {
-			$this->data['veritrans_hash'] = $this->request->post['veritrans_hash'];
-		} else {
-			$this->data['veritrans_hash'] = $this->config->get('veritrans_hash');
-		}
-
-		if (isset($this->request->post['veritrans_test'])) {
-			$this->data['veritrans_test'] = $this->request->post['veritrans_test'];
-		} else {
-			$this->data['veritrans_test'] = $this->config->get('veritrans_test');
-		}
-
-		if (isset($this->request->post['veritrans_total'])) {
-			$this->data['veritrans_total'] = $this->request->post['veritrans_total'];
-		} else {
-			$this->data['veritrans_total'] = $this->config->get('veritrans_total');
-		}
-
-		if (isset($this->request->post['veritrans_order_status_id'])) {
-			$this->data['veritrans_order_status_id'] = $this->request->post['veritrans_order_status_id'];
-		} else {
-			$this->data['veritrans_order_status_id'] = $this->config->get('veritrans_order_status_id');
+		foreach ($inputs as $input) {
+			if (isset($this->request->post[$input])) {
+				$this->data[$input] = $this->request->post[$input];
+			} else {
+				$this->data[$input] = $this->config->get($input);
+			}	
 		}
 
 		$this->load->model('localisation/order_status');
 
 		$this->data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
 
-		if (isset($this->request->post['veritrans_geo_zone_id'])) {
-			$this->data['veritrans_geo_zone_id'] = $this->request->post['veritrans_geo_zone_id'];
-		} else {
-			$this->data['veritrans_geo_zone_id'] = $this->config->get('veritrans_geo_zone_id');
-		}
-
 		$this->load->model('localisation/geo_zone');
 
 		$this->data['geo_zones'] = $this->model_localisation_geo_zone->getGeoZones();
-
-		if (isset($this->request->post['veritrans_status'])) {
-			$this->data['veritrans_status'] = $this->request->post['veritrans_status'];
-		} else {
-			$this->data['veritrans_status'] = $this->config->get('veritrans_status');
-		}
-
-		if (isset($this->request->post['veritrans_sort_order'])) {
-			$this->data['veritrans_sort_order'] = $this->request->post['veritrans_sort_order'];
-		} else {
-			$this->data['veritrans_sort_order'] = $this->config->get('veritrans_sort_order');
-		}
 
 		$this->template = 'payment/veritrans.tpl';
 		$this->children = array(

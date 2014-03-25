@@ -5,32 +5,78 @@
     <?php echo $breadcrumb['separator']; ?><a href="<?php echo $breadcrumb['href']; ?>"><?php echo $breadcrumb['text']; ?></a>
     <?php } ?>
   </div>
-  <?php if ($error_warning) { ?>
-  <div class="warning"><?php echo $error_warning; ?></div>
-  <?php } ?>
+  <!-- breadcrumb -->
+  
+  <?php if ($error_warning): ?>
+    <div class="warning"><?php echo $error_warning; ?></div>
+  <?php endif; ?>
+  <!-- error -->
+
   <div class="box">
     <div class="heading">
       <h1><img src="view/image/payment.png" alt="" /> <?php echo $heading_title; ?></h1>
       <div class="buttons"><a onclick="$('#form').submit();" class="button"><?php echo $button_save; ?></a><a href="<?php echo $cancel; ?>" class="button"><?php echo $button_cancel; ?></a></div>
     </div>
+    <!-- heading -->
+
     <div class="content">
       <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form">
         <table class="form">
-          <tr>
-            <td><span class="required">*</span> <?php echo $entry_merchant; ?></td>
-            <td><input type="text" name="veritrans_merchant" value="<?php echo $veritrans_merchant; ?>" />
-              <?php if ($error_merchant) { ?>
-              <span class="error"><?php echo $error_merchant; ?></span>
-              <?php } ?></td>
-          </tr>
 
           <tr>
+            <td><span class="required">*</span> <?php echo $entry_api_version; ?></td>
+            <td>
+              <?php $options = array('1' => 'v1', '2' => 'v2'); ?>
+              <select name="veritrans_api_version" id="veritransApiVersion">
+                <?php foreach ($options as $key => $value): ?>
+                  <option value="<?php echo $key ?>" <?php if ($key == $veritrans_api_version) echo 'selected' ?> ><?php echo $value ?></option>
+                <?php endforeach ?>
+              </select>
+              <?php if ($error_merchant): ?>
+                <span class="error"><?php echo $error_merchant; ?></span>
+              <?php endif; ?></td>
+          </tr>
+          <!-- API Version -->
+
+          <tr class="v2_settings">
+            <td><span class="required">*</span> <?php echo $entry_environment; ?></td>
+            <td>
+              <select name="veritrans_environment" value="<?php echo $veritrans_environment; ?>">
+                <option value="1">Development</option>
+                <option value="2">Production</option>
+              </select>
+              <?php if ($error_merchant): ?>
+                <span class="error"><?php echo $error_merchant; ?></span>
+              <?php endif; ?></td>
+          </tr>
+          <!-- Environment (v2-specific) -->
+
+          <tr class="v1_settings">
+            <td><span class="required">*</span> <?php echo $entry_merchant; ?></td>
+            <td><input type="text" name="veritrans_merchant" value="<?php echo $veritrans_merchant; ?>" />
+              <?php if ($error_merchant): ?>
+              <span class="error"><?php echo $error_merchant; ?></span>
+              <?php endif; ?></td>
+          </tr>
+          <!-- Merchant ID (v1-specific) -->
+
+          <tr class="v1_settings">
             <td><span class="required">*</span> <?php echo $entry_hash; ?></td>
             <td><input type="text" name="veritrans_hash" value="<?php echo $veritrans_hash; ?>" />
-              <?php if ($error_hash) { ?>
+              <?php if ($error_hash): ?>
               <span class="error"><?php echo $error_hash; ?></span>
-              <?php } ?></td>
+              <?php endif; ?></td>
           </tr>
+          <!-- Merchant Hash Key (v1-specific) -->
+
+          <tr class="v2_settings">
+            <td><span class="required">*</span> <?php echo $entry_server_key; ?></td>
+            <td><input type="text" name="veritrans_server_key" value="<?php echo $veritrans_server_key; ?>" />
+              <?php if ($error_hash): ?>
+              <span class="error"><?php echo $error_hash; ?></span>
+              <?php endif; ?></td>
+          </tr>
+          <!-- Server Key (v2-specific) -->
 
           <tr>
             <td><?php echo $entry_geo_zone; ?></td>
@@ -66,6 +112,23 @@
         </table>
       </form>
     </div>
+    <!-- content -->
   </div>
 </div>
+<script>
+  $(function() {
+    $("#veritransApiVersion").on('change', function(e, data) {
+      var api_version = $(this).val();
+      if (api_version == 1)
+      {
+        $('.v2_settings').hide();
+        $('.v1_settings').show();
+      } else
+      {
+        $('.v1_settings').hide();
+        $('.v2_settings').show();
+      }
+    });
+  });
+</script>
 <?php echo $footer; ?>
