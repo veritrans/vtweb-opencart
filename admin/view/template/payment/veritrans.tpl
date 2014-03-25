@@ -93,6 +93,31 @@
           <!-- Server Key (v2-specific) -->
 
           <tr>
+            <td><span class="required">*</span> <?php echo $entry_api_version; ?></td>
+            <td>
+              <?php $options = array('vtweb' => 'VT-Web', 'vtdirect' => 'VT-Direct'); ?>
+              <select name="veritrans_payment_type">
+                <?php foreach ($options as $key => $value): ?>
+                  <option value="<?php echo $key ?>" <?php if ($key == $veritrans_payment_type) echo 'selected' ?> ><?php echo $value ?></option>
+                <?php endforeach ?>
+              </select>
+              <?php if ($error_merchant): ?>
+                <span class="error"><?php echo $error_merchant; ?></span>
+              <?php endif; ?></td>
+          </tr>
+          <!-- Payment Type -->
+
+          <tr>
+            <td><span class="required">*</span> <?php echo $entry_3d_secure; ?></td>
+            <td><input type="checkbox" name="veritrans_3d_secure" <?php if ($veritrans_3d_secure) echo 'checked'; ?> />
+              <?php if ($error_hash): ?>
+                <span class="error"><?php echo $error_hash; ?></span>
+              <?php endif; ?>
+            </td>
+          </tr>
+          <!-- 3D Secure -->
+
+          <tr>
             <td><?php echo $entry_geo_zone; ?></td>
             <td><select name="veritrans_geo_zone_id">
                 <option value="0"><?php echo $text_all_zones; ?></option>
