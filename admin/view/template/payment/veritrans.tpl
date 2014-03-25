@@ -24,6 +24,20 @@
         <table class="form">
 
           <tr>
+            <td><?php echo $entry_status; ?></td>
+            <td><select name="veritrans_status">
+                <?php if ($veritrans_status) { ?>
+                <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
+                <option value="0"><?php echo $text_disabled; ?></option>
+                <?php } else { ?>
+                <option value="1"><?php echo $text_enabled; ?></option>
+                <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
+                <?php } ?>
+              </select></td>
+          </tr>
+          <!-- Status -->
+
+          <tr>
             <td><span class="required">*</span> <?php echo $entry_api_version; ?></td>
             <td>
               <?php $options = array('1' => 'v1', '2' => 'v2'); ?>
@@ -91,19 +105,7 @@
                 <?php } ?>
               </select></td>
           </tr>
-
-          <tr>
-            <td><?php echo $entry_status; ?></td>
-            <td><select name="veritrans_status">
-                <?php if ($veritrans_status) { ?>
-                <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
-                <option value="0"><?php echo $text_disabled; ?></option>
-                <?php } else { ?>
-                <option value="1"><?php echo $text_enabled; ?></option>
-                <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
-                <?php } ?>
-              </select></td>
-          </tr>
+          <!-- Geo Zone -->
 
           <tr>
             <td><?php echo $entry_sort_order; ?></td>
@@ -117,8 +119,8 @@
 </div>
 <script>
   $(function() {
-    $("#veritransApiVersion").on('change', function(e, data) {
-      var api_version = $(this).val();
+    function versionDependentOptions() {
+      var api_version = $('#veritransApiVersion').val();
       if (api_version == 1)
       {
         $('.v2_settings').hide();
@@ -128,6 +130,10 @@
         $('.v1_settings').hide();
         $('.v2_settings').show();
       }
+    }
+    versionDependentOptions();
+    $("#veritransApiVersion").on('change', function(e, data) {
+      versionDependentOptions();
     });
   });
 </script>
