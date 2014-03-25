@@ -41,6 +41,7 @@ class ControllerPaymentVeritrans extends Controller {
 			'entry_sort_order',
 			'entry_3d_secure',
 			'entry_payment_type',
+			'entry_enable_bank_installment',
 
 			'button_save',
 			'button_cancel'
@@ -104,7 +105,8 @@ class ControllerPaymentVeritrans extends Controller {
 			'veritrans_geo_zone_id',
 			'veritrans_sort_order',
 			'veritrans_3d_secure',
-			'veritrans_payment_type'
+			'veritrans_payment_type',
+			'veritrans_installment_terms'
 			);
 
 		foreach ($inputs as $input) {

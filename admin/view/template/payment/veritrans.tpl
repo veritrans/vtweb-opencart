@@ -107,6 +107,25 @@
           </tr>
           <!-- Payment Type -->
 
+          <?php $banks = array('bni' => 'BNI', 'cimb' => 'CIMB', 'mandiri' => 'Mandiri') ?>
+          <?php foreach ($banks as $bank_key => $bank_value): ?>
+            <tr>
+              <td>
+                <?php echo preg_replace('/BANK/', $bank_value, $entry_enable_bank_installment); ?>
+              </td>
+              <td>
+                <?php $installment_terms = array(3, 6, 9, 12, 18, 24); ?>
+                <?php foreach ($installment_terms as $installment_term): ?>
+                  <input type="checkbox" name="veritrans_installment_terms[<?php echo $bank_key ?>][<?php echo $installment_term ?>]" <?php if (array_key_exists($bank_key, $veritrans_installment_terms) && array_key_exists($installment_term, $veritrans_installment_terms[$bank_key]) && $veritrans_installment_terms[$bank_key][$installment_term]) echo 'checked'; ?> /> <?php echo $installment_term ?>
+                <?php endforeach ?>
+                <?php if ($error_merchant): ?>
+                  <span class="error"><?php echo $error_merchant; ?></span>
+                <?php endif; ?></td>
+            </tr>  
+          <?php endforeach ?>
+          
+          <!-- Installment -->
+
           <tr>
             <td><span class="required">*</span> <?php echo $entry_3d_secure; ?></td>
             <td><input type="checkbox" name="veritrans_3d_secure" <?php if ($veritrans_3d_secure) echo 'checked'; ?> />
