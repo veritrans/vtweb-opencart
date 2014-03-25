@@ -9,6 +9,7 @@ class ControllerPaymentVeritrans extends Controller {
 	protected function index() {
 
 		$this->load->model('payment/veritrans');
+		$this->data['errors'] = array();
 		
 		$products = $this->cart->getProducts();
 
@@ -21,7 +22,9 @@ class ControllerPaymentVeritrans extends Controller {
 		$this->data['merchant'] = $this->config->get('veritrans_merchant');
 		$this->data['trans_id'] = $this->session->data['order_id'];
 		$this->data['hash'] = $this->config->get('veritrans_hash');
-		$this->data['amount'] = $this->currency->format($order_info['total'], $order_info['currency_code'], $order_info['currency_value'], false);
+		// $this->data['amount'] = $this->currency->format($order_info['total'], $order_info['currency_code'], $order_info['currency_value'], false);
+		$this->data['amount'] = $order_info['total'];
+		// the amount of order MUST only be charged from the base currency to the IDR conversion
 		$this->data['bill_name'] = $order_info['payment_firstname'] . ' ' . $order_info['payment_lastname'];
 		$this->data['bill_addr_1'] = $order_info['payment_address_1'];
 		$this->data['bill_addr_2'] = $order_info['payment_address_2'];
@@ -56,8 +59,6 @@ class ControllerPaymentVeritrans extends Controller {
 			$this->data['ship_country'] = $order_info['payment_country'];
 		}
 
-		$veritrans->merchant_id = $this->data['merchant'];
-		$veritrans->merchant_hash_key = $this -> data['hash'];
 		$veritrans->order_id = $this->session->data['order_id'];
 		$veritrans->session_id = $this->session->data['order_id'];
 
@@ -81,59 +82,89 @@ class ControllerPaymentVeritrans extends Controller {
 		if ($veritrans->shipping_phone==null){
 			$veritrans->shipping_phone="02111111111";
 		}
-		$veritrans->gross_amount = number_format($this->data['amount'],0,'','');
-		//echo "gross amount :".$veritrans->gross_amount."<br>";
+		
+		// $veritrans->gross_amount = number_format($this->data['amount'],0,'','');
+		$veritrans->gross_amount = $this->data['amount'];
+		// The gross amount MUST NOT be formatted.
+		
 		$commodities = array();
-		$index=1;
-		$productprice=0;
+		$index = 1;
+		$productprice = 0;
 		foreach ($products as $product){
 			if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-				$product['price']=number_format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')),0,'','');
+				// $product['price'] = number_format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')),0,'','');
+				$product['price'] = $this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax'));
 			}
 			$commodity_item = array("item_id" => $product['product_id'],
-						"price" => number_format($product['price'],0,'',''),
-						"quantity" => $product['quantity'],
-						"item_name1" => (substr($product['name'],0,17))."...",
-						"item_name2" => (substr($product['name'],0,17))."...");
+				// "price" => number_format($product['price'],0,'',''),
+				"price" => $product['price'],
+				"quantity" => $product['quantity'],
+				"item_name1" => (substr($product['name'],0,17))."...",
+				"item_name2" => (substr($product['name'],0,17))."...");
 						
 			array_push($commodities, $commodity_item);
-			$productprice+=$product['price']*$product['quantity'];
+			$productprice += $product['price'] * $product['quantity'];
 			//echo "product price ".$index++." = ".$productprice."<br>";
 		}
 
-		if ($this->cart->hasShipping()){
-			if($this->tax->calculate($this->config->get('flat_cost'), $this->config->get('flat_tax_class_id'), $this->config->get('config_tax'))!=0){
-				$shipping_cost=$this->tax->calculate($this->config->get('flat_cost'), $this->config->get('flat_tax_class_id'), $this->config->get('config_tax'));
-			} else{
+		if ($this->cart->hasShipping()) {
+			
+			if($this->tax->calculate($this->config->get('flat_cost'), 
+				$this->config->get('flat_tax_class_id'), 
+				$this->config->get('config_tax')) != 0) {
+				$shipping_cost = $this->tax->calculate($this->config->get('flat_cost'), $this->config->get('flat_tax_class_id'), $this->config->get('config_tax'));
+			} else {
 				$shipping_cost = $veritrans->gross_amount - $productprice;
 			}
-			$shipping_fee= array("item_id" => "0",
+			
+			$shipping_fee = array("item_id" => "0",
 					"price" => $shipping_cost,
 					"quantity" => 1,
 					"item_name1" => "SHIPPING FEE",
 					"item_name2" => "SHIPPING FEE");
-					array_push($commodities, $shipping_fee);
-			$productprice+=$shipping_cost;
+			
+			array_push($commodities, $shipping_fee);
+			$productprice += $shipping_cost;
 
 			//echo "shipping cost = ".$shipping_cost."<br>";
 		}
 
-		if ($veritrans->gross_amount!=$productprice){
-			$fee= array("item_id" => "aa",
-					"price" => $veritrans->gross_amount-$productprice,
+		if ($veritrans->gross_amount != $productprice){
+			$fee = array("item_id" => "FEE",
+					"price" => $veritrans->gross_amount - $productprice,
 					"quantity" => 1,
 					"item_name1" => "FEE",
 					"item_name2" => "FEE");
-					array_push($commodities, $fee);
-
+			array_push($commodities, $fee);
 		}
 
+		// convert item prices
+		if ($this->config->get('config_currency') != 'IDR')
+		{
+			if ($this->currency->has('IDR'))
+			{
+				foreach ($commodities as &$commodity) {
+					$commodity['price'] = intval($this->currency->convert($commodity['price'], $this->config->get('config_currency'), 'IDR'));
+				}
+				$veritrans->gross_amount = intval($this->currency->convert($veritrans->gross_amount, $this->config->get('config_currency'), 'IDR'));
+			} elseif ($this->config->get('veritrans_currency_conversion') > 0)
+			{
+				foreach ($commodities as &$commodity) {
+					$commodity['price'] = intval($commodity['price'] * $this->config->get('veritrans_currency_conversion'));
+				}
+				$veritrans->gross_amount = intval($veritrans->gross_amount * $this->config->get('veritrans_currency_conversion'));
+			} else
+			{
+				$this->data['errors'][] = "Neither the IDR currency is installed or the Veritrans currency conversion rate is valid. Please review your currency setting.";
+			}
+		}
 		$veritrans->items = $commodities;
-
+		
     $veritrans->finish_payment_return_url = $this->url->link('checkout/success');
     $veritrans->unfinish_payment_return_url = $this->url->link('checkout/cart');
     $veritrans->error_payment_return_url = $this->url->link('checkout/cart');
 
+    // Version-specific Veritrans settings
     $veritrans->version = $this->config->get('veritrans_api_version');
     if ($veritrans->version == 2)
     {
@@ -145,17 +176,23 @@ class ControllerPaymentVeritrans extends Controller {
     		$veritrans->environment = Veritrans::ENVIRONMENT_DEVELOPMENT;	
     	}    	
     	$veritrans->server_key = $this->config->get('veritrans_server_key');
+    } else
+    {
+    	$veritrans->merchant_id = $this->data['merchant'];
+			$veritrans->merchant_hash_key = $this->data['hash'];
     }
 
     if ($this->config->get('veritrans_3d_secure') == "on")
     	$veritrans->enable_3d_secure = TRUE;
 
-		// print_r ($veritrans);
 		$this->data['key'] = $veritrans->getTokens();
 
-		if(isset($this->data['key']['error_message'])) {
-			echo $this->data['key']['error_message'];
-			return false;
+		if(!$this->data['key']) {
+			$veritrans_error = "";
+			foreach ($veritrans->errors as $key => $value) {
+				$veritrans_error .= "$key: $value";
+			}
+			$this->data['errors'][] = $veritrans_error;
 		}
 
 		// save order
