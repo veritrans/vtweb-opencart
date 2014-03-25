@@ -1,12 +1,12 @@
 <?php
 
+require_once(DIR_SYSTEM . 'library/veritrans/veritrans.php');
+
 class ControllerPaymentVeritrans extends Controller {
   
   private $order_id = "";
 
 	protected function index() {
-
-		require_once(DIR_SYSTEM . 'library/veritrans/veritrans.php');
 
 		$this->load->model('payment/veritrans');
 		
@@ -147,6 +147,9 @@ class ControllerPaymentVeritrans extends Controller {
     	$veritrans->server_key = $this->config->get('veritrans_server_key');
     }
 
+    if ($this->config->get('veritrans_3d_secure') == "on")
+    	$veritrans->enable_3d_secure = TRUE;
+
 		// print_r ($veritrans);
 		$this->data['key'] = $veritrans->getTokens();
 
@@ -193,7 +196,6 @@ class ControllerPaymentVeritrans extends Controller {
 
   public function payment_notification()
   {
-		require_once(DIR_SYSTEM.'library/veritrans/veritrans.php');
 		$this->load->model('checkout/order');
 		$this->load->model('payment/veritrans');
 		$veritrans_notification = new VeritransNotification();
@@ -208,14 +210,14 @@ class ControllerPaymentVeritrans extends Controller {
 		// Check transaction result
 
 		if($veritrans_notification->mStatus == 'success'){
-		  $this->model_checkout_order->confirm($veritrans_notification->orderId,5,'success');
+		  $this->model_checkout_order->confirm($veritrans_notification->orderId, 5, 'success');
 		  echo "OK ";
 		  exit;
 
 		}
 		 else
 		{
-		  $this->model_checkout_order->confirm($veritrans_notification->orderId,10,'failed');
+		  $this->model_checkout_order->confirm($veritrans_notification->orderId, 10, 'failed');
 		  echo "FAIL";
 		  exit;
 		}
