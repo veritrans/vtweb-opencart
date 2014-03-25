@@ -16,6 +16,8 @@ $_['entry_environment']  = 'Environment'; // v2 API only
 $_['entry_merchant']     = 'Merchant ID:'; // v1 API only
 $_['entry_hash']     	   = 'Merchant Hash Key'; // v1 API only
 $_['entry_server_key']   = 'Server Key'; // v2 API only
+$_['entry_3d_secure']    = 'Enable 3D Secure?';
+$_['entry_payment_type'] = 'Payment Type';
 $_['entry_test']         = 'Test Mode:';
 $_['entry_total']        = 'Total:<br /><span class="help">The checkout total the order must reach before this payment method becomes active.</span>';
 $_['entry_order_status'] = 'Order Status:';
