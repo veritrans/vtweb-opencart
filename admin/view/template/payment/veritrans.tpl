@@ -115,7 +115,7 @@
               <td>
                 <?php $installment_terms = array(3, 6, 9, 12, 18, 24); ?>
                 <?php foreach ($installment_terms as $installment_term): ?>
-                  <input type="checkbox" name="veritrans_installment_terms[<?php echo $bank_key ?>][<?php echo $installment_term ?>]" <?php if (array_key_exists($bank_key, $veritrans_installment_terms) && array_key_exists($installment_term, $veritrans_installment_terms[$bank_key]) && $veritrans_installment_terms[$bank_key][$installment_term]) echo 'checked'; ?> /> <?php echo $installment_term ?>
+                  <input type="checkbox" name="veritrans_installment_terms[<?php echo $bank_key ?>][<?php echo $installment_term ?>]" <?php if ($veritrans_installment_terms && array_key_exists($bank_key, $veritrans_installment_terms) && array_key_exists($installment_term, $veritrans_installment_terms[$bank_key]) && $veritrans_installment_terms[$bank_key][$installment_term]) echo 'checked'; ?> /> <?php echo $installment_term ?>
                 <?php endforeach ?>
                 <?php if ($error_merchant): ?>
                   <span class="error"><?php echo $error_merchant; ?></span>
