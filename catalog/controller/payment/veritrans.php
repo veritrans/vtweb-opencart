@@ -1,9 +1,15 @@
 <?php
+
 class ControllerPaymentVeritrans extends Controller {
-    private $order_id="";
+  
+  private $order_id = "";
+
 	protected function index() {
-		require_once(DIR_SYSTEM.'library/veritrans/veritrans.php');
+
+		require_once(DIR_SYSTEM . 'library/veritrans/veritrans.php');
+
 		$this->load->model('payment/veritrans');
+		
 		$products = $this->cart->getProducts();
 
 		$this->language->load('payment/veritrans');
@@ -28,7 +34,7 @@ class ControllerPaymentVeritrans extends Controller {
 		$veritrans = new Veritrans;
 		if ($this->cart->hasShipping()) {
 			$veritrans->required_shipping_address = '1';
-			$veritrans->billing_address_different_with_shipping_address = '1';
+			$veritrans->billing_different_with_shipping = '1';
 			$veritrans->shipping_first_name =$order_info['shipping_firstname'];
 			$veritrans->shipping_last_name = $order_info['shipping_lastname'];
 			$this->data['ship_addr_1'] = $order_info['shipping_address_1'];
@@ -39,7 +45,7 @@ class ControllerPaymentVeritrans extends Controller {
 			$this->data['ship_country'] = $order_info['shipping_country'];
 		} else {
 			$veritrans->required_shipping_address = '0';
-			$veritrans->billing_address_different_with_shipping_address = '1';
+			$veritrans->billing_different_with_shipping = '1';
 			$veritrans->shipping_first_name =$order_info['payment_firstname'];
 			$veritrans->shipping_last_name = $order_info['payment_lastname'];
 			$this->data['ship_addr_1'] = $order_info['payment_address_1'];
@@ -71,6 +77,7 @@ class ControllerPaymentVeritrans extends Controller {
 		$veritrans->shipping_country_code = $order_info['payment_iso_code_3'];
 		$veritrans->shipping_postal_code = $this->data['ship_post_code'];
 		$veritrans->shipping_phone = $order_info['telephone'];
+
 		if ($veritrans->shipping_phone==null){
 			$veritrans->shipping_phone="02111111111";
 		}
@@ -83,11 +90,11 @@ class ControllerPaymentVeritrans extends Controller {
 			if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
 				$product['price']=number_format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')),0,'','');
 			}
-			$commodity_item = array("COMMODITY_ID" => $product['product_id'],
-						"COMMODITY_PRICE" => number_format($product['price'],0,'',''),
-						"COMMODITY_QTY" => $product['quantity'],
-						"COMMODITY_NAME1" => (substr($product['name'],0,17))."...",
-						"COMMODITY_NAME2" => (substr($product['name'],0,17))."...");
+			$commodity_item = array("item_id" => $product['product_id'],
+						"price" => number_format($product['price'],0,'',''),
+						"quantity" => $product['quantity'],
+						"item_name1" => (substr($product['name'],0,17))."...",
+						"item_name2" => (substr($product['name'],0,17))."...");
 						
 			array_push($commodities, $commodity_item);
 			$productprice+=$product['price']*$product['quantity'];
@@ -100,11 +107,11 @@ class ControllerPaymentVeritrans extends Controller {
 			} else{
 				$shipping_cost = $veritrans->gross_amount - $productprice;
 			}
-			$shipping_fee= array("COMMODITY_ID" => "0",
-					"COMMODITY_PRICE" => $shipping_cost,
-					"COMMODITY_QTY" => 1,
-					"COMMODITY_NAME1" => "SHIPPING FEE",
-					"COMMODITY_NAME2" => "SHIPPING FEE");
+			$shipping_fee= array("item_id" => "0",
+					"price" => $shipping_cost,
+					"quantity" => 1,
+					"item_name1" => "SHIPPING FEE",
+					"item_name2" => "SHIPPING FEE");
 					array_push($commodities, $shipping_fee);
 			$productprice+=$shipping_cost;
 
@@ -112,29 +119,28 @@ class ControllerPaymentVeritrans extends Controller {
 		}
 
 		if ($veritrans->gross_amount!=$productprice){
-			$fee= array("COMMODITY_ID" => "aa",
-					"COMMODITY_PRICE" => $veritrans->gross_amount-$productprice,
-					"COMMODITY_QTY" => 1,
-					"COMMODITY_NAME1" => "FEE",
-					"COMMODITY_NAME2" => "FEE");
+			$fee= array("item_id" => "aa",
+					"price" => $veritrans->gross_amount-$productprice,
+					"quantity" => 1,
+					"item_name1" => "FEE",
+					"item_name2" => "FEE");
 					array_push($commodities, $fee);
 
 		}
 
-		$veritrans->commodity = $commodities;
+		$veritrans->items = $commodities;
 
     $veritrans->finish_payment_return_url = $this->url->link('checkout/success');
     $veritrans->unfinish_payment_return_url = $this->url->link('checkout/cart');
     $veritrans->error_payment_return_url = $this->url->link('checkout/cart');
 
 		// print_r ($veritrans);
-
-		$this->data['key'] = $veritrans->get_keys();
+		$this->data['key'] = $veritrans->getTokens();
 
 		# printout keys to browser
 		//var_dump($this->data['key']);
 
-		if(isset($this->data['key']['error_message'])){
+		if(isset($this->data['key']['error_message'])) {
 			echo $this->data['key']['error_message'];
 			return false;
 		}
@@ -202,4 +208,4 @@ class ControllerPaymentVeritrans extends Controller {
 			}
 	   }
 }
-?>
+
