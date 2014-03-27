@@ -6,17 +6,31 @@ class ControllerPaymentVeritrans extends Controller {
   
   private $order_id = "";
 
-	protected function index() {
+	public function index() {
 
+		$this->data['errors'] = array();
+		$this->data['button_confirm'] = $this->language->get('button_confirm');
+		
+		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/veritrans.tpl')) {
+			$this->template = $this->config->get('config_template') . '/template/payment/veritrans.tpl';
+		} else {
+			$this->template = 'default/template/payment/veritrans.tpl';
+		}
+
+		$this->render();
+	}
+
+	public function process_order() {
+		
 		$this->load->model('payment/veritrans');
+		$this->load->model('checkout/order');
+		$this->language->load('payment/veritrans');
+		
 		$this->data['errors'] = array();
 		
 		$products = $this->cart->getProducts();
-
-		$this->language->load('payment/veritrans');
-
+		
 		$this->data['button_confirm'] = $this->language->get('button_confirm');
-		$this->load->model('checkout/order');
 		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 		$this->order_id=$order_info['order_id'];
 		$this->data['merchant'] = $this->config->get('veritrans_merchant');
@@ -34,7 +48,9 @@ class ControllerPaymentVeritrans extends Controller {
 		$this->data['bill_country'] = $order_info['payment_country'];
 		$this->data['bill_tel'] = $order_info['telephone'];
 		$this->data['bill_email'] = $order_info['email'];
+		
 		$veritrans = new Veritrans;
+		
 		if ($this->cart->hasShipping()) {
 			$veritrans->required_shipping_address = '1';
 			$veritrans->billing_different_with_shipping = '1';
@@ -107,14 +123,18 @@ class ControllerPaymentVeritrans extends Controller {
 			//echo "product price ".$index++." = ".$productprice."<br>";
 		}
 
+		// calculate shipping
 		if ($this->cart->hasShipping()) {
 			
-			if($this->tax->calculate($this->config->get('flat_cost'), 
-				$this->config->get('flat_tax_class_id'), 
-				$this->config->get('config_tax')) != 0) {
+			if($this->tax->calculate($this->config->get('flat_cost'), $this->config->get('flat_tax_class_id'), $this->config->get('config_tax')) != 0) {
+				
+				// TODO: change this to the selected shipping rate
 				$shipping_cost = $this->tax->calculate($this->config->get('flat_cost'), $this->config->get('flat_tax_class_id'), $this->config->get('config_tax'));
+
 			} else {
+
 				$shipping_cost = $veritrans->gross_amount - $productprice;
+
 			}
 			
 			$shipping_fee = array("item_id" => "0",
@@ -129,7 +149,7 @@ class ControllerPaymentVeritrans extends Controller {
 			//echo "shipping cost = ".$shipping_cost."<br>";
 		}
 
-		if ($veritrans->gross_amount != $productprice){
+		if ($veritrans->gross_amount != $productprice) {
 			$fee = array("item_id" => "FEE",
 					"price" => $veritrans->gross_amount - $productprice,
 					"quantity" => 1,
@@ -138,7 +158,7 @@ class ControllerPaymentVeritrans extends Controller {
 			array_push($commodities, $fee);
 		}
 
-		// convert item prices
+		// convert all item prices to IDR
 		if ($this->config->get('config_currency') != 'IDR')
 		{
 			if ($this->currency->has('IDR'))
@@ -164,6 +184,21 @@ class ControllerPaymentVeritrans extends Controller {
     $veritrans->unfinish_payment_return_url = $this->url->link('checkout/cart');
     $veritrans->error_payment_return_url = $this->url->link('checkout/cart');
 
+    // VT-Web or VT-Direct?
+    if ($this->config->get('veritrans_payment_type') == 'vtdirect') {
+    	$veritrans->payment_type = Veritrans::VT_DIRECT;
+    	$veritrans->token_id = $_POST['token_id'];
+    } 
+    else 
+    {
+    	$veritrans->payment_type = Veritrans::VT_WEB;
+    }
+
+    if ($this->config->get('veritrans_payment_type') == 'vtdirect' && $this->config->get('veritrans_api_version') == 1)
+    {
+    	$veritrans->server_key = $this->config->get('veritrans_server_key_v1');
+    }
+
     // Version-specific Veritrans settings
     $veritrans->version = $this->config->get('veritrans_api_version');
     if ($veritrans->version == 2)
@@ -175,18 +210,36 @@ class ControllerPaymentVeritrans extends Controller {
     	{
     		$veritrans->environment = Veritrans::ENVIRONMENT_DEVELOPMENT;	
     	}    	
-    	$veritrans->server_key = $this->config->get('veritrans_server_key');
+    	$veritrans->server_key = $this->config->get('veritrans_server_key_v2');
     } else
     {
     	$veritrans->merchant_id = $this->data['merchant'];
 			$veritrans->merchant_hash_key = $this->data['hash'];
     }
 
+    // Optional parameters
     if ($this->config->get('veritrans_3d_secure') == "on")
     	$veritrans->enable_3d_secure = TRUE;
 
-		$this->data['key'] = $veritrans->getTokens();
+    // Installment terms
+    if ($this->config->get('veritrans_installment_terms'))
+    {
+    	$installment_config = $this->config->get('veritrans_installment_terms');
+    	$veritrans->installment_banks = array_keys($installment_config);
+    	$installment_terms = array();
+    	foreach ($installment_config as $key => $value) {
+    		$installment_terms[$key] = array_keys($value);
+    	}
+    	$veritrans->installment_terms = $installment_terms;
+    }
 
+    // charge!
+    if ($veritrans->payment_type == Veritrans::VT_DIRECT) {
+    	$this->data['key'] = $veritrans->charge();
+    } else {
+    	$this->data['key'] = $veritrans->getTokens();
+    }
+		
 		if(!$this->data['key']) {
 			$veritrans_error = "";
 			foreach ($veritrans->errors as $key => $value) {
@@ -196,7 +249,7 @@ class ControllerPaymentVeritrans extends Controller {
 		}
 
 		// save order
-		if ($this->config->get('veritrans_api_version') == 1)
+		if ($this->config->get('veritrans_api_version') == 1 && $this->config->get('veritrans_payment_type') == 'vtweb')
 		{
 			$dataToken = array(
 				'order_id' => $order_info['order_id'],
@@ -222,13 +275,26 @@ class ControllerPaymentVeritrans extends Controller {
 		$this->data['options'] = 'test_status=' . $status . ',dups=false,cb_post=false';
 		$this->data['veritrans'] = $veritrans;
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/veritrans.tpl')) {
-			$this->template = $this->config->get('config_template') . '/template/payment/veritrans.tpl';
-		} else {
-			$this->template = 'default/template/payment/veritrans.tpl';
-		}
+		// if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/veritrans.tpl')) {
+		// 	$this->template = $this->config->get('config_template') . '/template/payment/veritrans.tpl';
+		// } else {
+		// 	$this->template = 'default/template/payment/veritrans.tpl';
+		// }
 
-		$this->render();
+		// $this->render();
+		var_dump($order_info);
+		var_dump($this->data['key']);
+
+	}
+
+	public function success()
+	{
+
+	}
+
+	public function failure()
+	{
+		
 	}
 
   public function payment_notification()

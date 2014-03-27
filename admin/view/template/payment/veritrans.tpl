@@ -82,9 +82,36 @@
           </tr>
           <!-- Merchant Hash Key (v1-specific) -->
 
+          <tr class="v1_settings">
+            <td><span class="required">*</span> <?php echo $entry_client_key_v1; ?></td>
+            <td><input type="text" name="veritrans_client_key_v1" value="<?php echo $veritrans_client_key_v1; ?>" />
+              <?php if ($error_hash): ?>
+              <span class="error"><?php echo $error_hash; ?></span>
+              <?php endif; ?></td>
+          </tr>
+          <!-- VT-Direct Client Key (v1-specific) -->
+
+          <tr class="v1_settings">
+            <td><span class="required">*</span> <?php echo $entry_server_key_v1; ?></td>
+            <td><input type="text" name="veritrans_server_key_v1" value="<?php echo $veritrans_server_key_v1; ?>" />
+              <?php if ($error_hash): ?>
+              <span class="error"><?php echo $error_hash; ?></span>
+              <?php endif; ?></td>
+          </tr>
+          <!-- VT-Direct Server Key (v1-specific) -->
+
+          <tr class="v2_settings">
+            <td><span class="required">*</span> <?php echo $entry_client_key; ?></td>
+            <td><input type="text" name="veritrans_client_key_v2" value="<?php echo $veritrans_client_key_v2; ?>" />
+              <?php if ($error_hash): ?>
+              <span class="error"><?php echo $error_hash; ?></span>
+              <?php endif; ?></td>
+          </tr>
+          <!-- Client Key (v2-specific) -->
+          
           <tr class="v2_settings">
             <td><span class="required">*</span> <?php echo $entry_server_key; ?></td>
-            <td><input type="text" name="veritrans_server_key" value="<?php echo $veritrans_server_key; ?>" />
+            <td><input type="text" name="veritrans_server_key_v2" value="<?php echo $veritrans_server_key_v2; ?>" />
               <?php if ($error_hash): ?>
               <span class="error"><?php echo $error_hash; ?></span>
               <?php endif; ?></td>

@@ -44,6 +44,9 @@ class ControllerPaymentVeritrans extends Controller {
 			'entry_payment_type',
 			'entry_enable_bank_installment',
 			'entry_currency_conversion',
+			'entry_client_key',
+			'entry_server_key_v1',
+			'entry_client_key_v1',
 
 			'button_save',
 			'button_cancel'
@@ -100,7 +103,8 @@ class ControllerPaymentVeritrans extends Controller {
 			'veritrans_environment',
 			'veritrans_merchant',
 			'veritrans_hash',
-			'veritrans_server_key',
+			'veritrans_server_key_v1',
+			'veritrans_server_key_v2',
 			'veritrans_test',
 			'veritrans_total',
 			'veritrans_order_status_id',
@@ -110,7 +114,9 @@ class ControllerPaymentVeritrans extends Controller {
 			'veritrans_payment_type',
 			'veritrans_installment_terms',
 			'veritrans_currency_conversion',
-			'veritrans_status'
+			'veritrans_status',
+			'veritrans_client_key_v1',
+			'veritrans_client_key_v2'
 			);
 
 		foreach ($inputs as $input) {
