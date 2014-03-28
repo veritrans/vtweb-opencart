@@ -303,15 +303,14 @@ class ControllerPaymentVeritrans extends Controller {
 
     $this->data['veritrans'] = $veritrans;
 
-		// only render an additonal form when we have 
-		if ($this->config->get('veritrans_api_version') == 1 && $this->config->get('veritrans_payment_type') == 'vtweb')
+		if ($this->config->get('veritrans_payment_type') == 'vtweb')
 		{
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/veritrans.tpl')) {
-				$this->template = $this->config->get('config_template') . '/template/payment/veritrans.tpl';
-			} else {
-				$this->template = 'default/template/payment/veritrans.tpl';
-			}
-			$this->response->setOutput($this->render(TRUE));
+      if ($this->config->get('veritrans_api_version') == 2) {
+        $this->redirect($this->data['key']->redirect_url);
+      } else {
+        $this->template = 'default/template/payment/veritrans_v1_vtweb.tpl';
+        $this->response->setOutput($this->render(TRUE));
+      }
 		} else {
 			if ($payment_success) {
 				$this->redirect($this->url->link('payment/veritrans/success'));
@@ -393,6 +392,7 @@ class ControllerPaymentVeritrans extends Controller {
       if($veritrans_notification->mStatus && $token_merchant != $veritrans_notification->TOKEN_MERCHANT) 
       {
         $this->model_checkout_order->confirm($veritrans_notification->orderId, 5, 'success');
+        $this->cart->clear();
       } else
       {
         $this->model_checkout_order->confirm($veritrans_notification->orderId, 10, 'failed');
