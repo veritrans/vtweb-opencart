@@ -188,7 +188,6 @@ class ControllerPaymentVeritrans extends Controller {
     if ($this->config->get('veritrans_payment_type') == 'vtdirect') {
     	$veritrans->payment_type = Veritrans::VT_DIRECT;
     	$veritrans->token_id = $_POST['token_id'];
-    	var_dump($_POST);
     } 
     else 
     {
@@ -234,97 +233,171 @@ class ControllerPaymentVeritrans extends Controller {
     	$veritrans->installment_terms = $installment_terms;
     }
 
-    // charge!
+    // if we use VT-Direct, charge the CC. If we use VT-Web, display the form
     if ($veritrans->payment_type == Veritrans::VT_DIRECT) {
+    	
     	$this->data['key'] = $veritrans->charge();
-    } else {
-    	$this->data['key'] = $veritrans->getTokens();
-    }
-		
-		if(!$this->data['key']) {
-			$veritrans_error = "";
-			foreach ($veritrans->errors as $key => $value) {
-				$veritrans_error .= "$key: $value";
-			}
-			$this->data['errors'][] = $veritrans_error;
-		}
 
-		// save order
+    	if ($this->config->get('veritrans_api_version') == 2)
+    	{
+    		if ($this->data['key']['transaction_status'] == 'capture')
+    		{
+    			$paymentSuccess = TRUE;
+    		} else
+    		{
+    			$paymentSuccess = FALSE;
+    		}
+    	} else // v1 or else
+    	{
+    		if ($this->data['key']['status'] == 'success')
+    		{
+    			$paymentSuccess = TRUE;
+    		} else
+    		{
+    			$paymentSuccess = FALSE;
+    		}
+    	}
+
+    } else {
+    	
+    	$this->data['key'] = $veritrans->getTokens();
+
+    	// handle charge result		
+			if(!$this->data['key']) {
+				$veritrans_error = "";
+				if ($veritrans->error != NULL) {
+					foreach ($veritrans->errors as $key => $value) {
+						$veritrans_error .= "$key: $value";
+					}
+				}			
+				$this->data['errors'][] = $veritrans_error;
+			}
+
+			// save order
+			if ($this->config->get('veritrans_api_version') == 1 && $this->config->get('veritrans_payment_type') == 'vtweb')
+			{
+				$dataToken = array(
+					'order_id' => $order_info['order_id'],
+					'token_browser' => $this->data['key']['token_browser'],
+					'token_merchant'=> $this->data['key']['token_merchant']
+				);
+				$this->model_payment_veritrans->addToken($dataToken);
+			}
+
+			switch ($this->config->get('veritrans_test')) {
+				case 'live':
+					$status = 'live';
+					break;
+				case 'successful':
+				default:
+					$status = 'true';
+					break;
+				case 'fail':
+					$status = 'false';
+					break;
+			}
+
+			$this->data['options'] = 'test_status=' . $status . ',dups=false,cb_post=false';
+			
+    }
+
+    $this->data['veritrans'] = $veritrans;
+
+		// only render an additonal form when we have 
 		if ($this->config->get('veritrans_api_version') == 1 && $this->config->get('veritrans_payment_type') == 'vtweb')
 		{
-			$dataToken = array(
-				'order_id' => $order_info['order_id'],
-				'token_browser' => $this->data['key']['token_browser'],
-				'token_merchant'=> $this->data['key']['token_merchant']
-			);
-			$this->model_payment_veritrans->addToken($dataToken);
+			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/veritrans.tpl')) {
+				$this->template = $this->config->get('config_template') . '/template/payment/veritrans.tpl';
+			} else {
+				$this->template = 'default/template/payment/veritrans.tpl';
+			}
+			$this->response->setOutput($this->render(TRUE));
+		} else {
+			if ($payment_success) {
+				$this->redirect($this->url->link('payment/veritrans/success'));
+			} else
+			{
+				$this->redirect($this->url->link('payment/veritrans/failure'));
+			}
 		}
-
-		switch ($this->config->get('veritrans_test')) {
-			case 'live':
-				$status = 'live';
-				break;
-			case 'successful':
-			default:
-				$status = 'true';
-				break;
-			case 'fail':
-				$status = 'false';
-				break;
-		}
-
-		$this->data['options'] = 'test_status=' . $status . ',dups=false,cb_post=false';
-		$this->data['veritrans'] = $veritrans;
-
-		// if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/veritrans.tpl')) {
-		// 	$this->template = $this->config->get('config_template') . '/template/payment/veritrans.tpl';
-		// } else {
-		// 	$this->template = 'default/template/payment/veritrans.tpl';
-		// }
-
-		// $this->render();
-		var_dump($order_info);
-		var_dump($this->data['key']);
 
 	}
 
 	public function success()
 	{
+		$this->data = array_merge($this->language->load('payment/veritrans'), $this->data);
+		$this->document->setTitle($this->language->get('heading_title'));
 
+		$this->cart->clear();
+		unset($this->session->data['order_id']);
+		
+		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/veritrans_success.tpl')) {
+			$this->template = $this->config->get('config_template') . '/template/payment/veritrans_success.tpl';
+		} else {
+			$this->template = 'default/template/payment/veritrans_success.tpl';
+		}
+
+		$this->children = array(
+			'common/column_left',
+			'common/column_right',
+			'common/content_top',
+			'common/content_bottom',
+			'common/footer',
+			'common/header'
+		);
+
+		$this->response->setOutput($this->render(true));
 	}
 
 	public function failure()
 	{
-		
+		$this->language->load('payment/veritrans');
+
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->data['heading_title'] = $this->language->get('heading_title');
+		$this->data['text_payment_failed'] = $this->language->get('text_payment_failed');
+
+		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/veritrans_failure.tpl')) {
+			$this->template = $this->config->get('config_template') . '/template/payment/veritrans_failure.tpl';
+		} else {
+			$this->template = 'default/template/payment/veritrans_failure.tpl';
+		}
+
+		$this->children = array(
+			'common/column_left',
+			'common/column_right',
+			'common/content_top',
+			'common/content_bottom',
+			'common/footer',
+			'common/header'
+		);
+
+		$this->response->setOutput($this->render(true));	
 	}
 
   public function payment_notification()
   {
 		$this->load->model('checkout/order');
 		$this->load->model('payment/veritrans');
-		$veritrans_notification = new VeritransNotification();
-		$token_merchant=$this->model_payment_veritrans->getTokenMerchant($veritrans_notification->orderId);
 
-		// Verify the Merchant Key
-		if($token_merchant != $veritrans_notification->TOKEN_MERCHANT){
-		  echo "ERR";
-		  exit();
-		}
+    if ($this->config->get('veritrans_api_version') == 2)
+    {
 
-		// Check transaction result
+    } else
+    {
+      $veritrans_notification = new VeritransNotification();
+      $token_merchant = $this->model_payment_veritrans->getTokenMerchant($veritrans_notification->orderId);
 
-		if($veritrans_notification->mStatus == 'success'){
-		  $this->model_checkout_order->confirm($veritrans_notification->orderId, 5, 'success');
-		  echo "OK ";
-		  exit;
-
-		}
-		 else
-		{
-		  $this->model_checkout_order->confirm($veritrans_notification->orderId, 10, 'failed');
-		  echo "FAIL";
-		  exit;
-		}
+      // Verify the Merchant Key
+      if($veritrans_notification->mStatus && $token_merchant != $veritrans_notification->TOKEN_MERCHANT) 
+      {
+        $this->model_checkout_order->confirm($veritrans_notification->orderId, 5, 'success');
+      } else
+      {
+        $this->model_checkout_order->confirm($veritrans_notification->orderId, 10, 'failed');
+      }
+    }	
   }
 }
 

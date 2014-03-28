@@ -105,7 +105,6 @@
               Veritrans.client_key = '<?php echo $this->config->get('veritrans_client_key_v1') ?>'; // please add client-key from veritrans
 
               function _cardSet() {
-                debugger;
                 return {
                   "card_number" : $('.card-number').val(),
                   "card_exp_month": $('.card-expiry-month').val(),
@@ -115,19 +114,16 @@
               };
 
               function _success(d) {
-                debugger;
                 $('#token_id').val(d.data.token_id); // store token data in input #token_id
                 $("#payment-form")[0].submit(); //submits Token to merchant server
               };
 
               function _error(d) {
-                debugger;
                 alert("Error: " + d.message); // please customize the error
                 $('.submit-button').removeAttr("disabled");
               };
 
               $("#payment-form")[0].submit(function(e){
-                debugger;
                 $('.submit-button').attr("disabled", "disabled"); // disable the submit button
                 Veritrans.tokenGet(_cardSet, _success, _error);
                 return false;
@@ -173,7 +169,7 @@
             }
 
             $("#payment-form").submit(function(e){
-              // $('.submit-button').attr("disabled", "disabled"); // disable the submit button
+              $('.submit-button').attr("disabled", "disabled"); // disable the submit button
               Veritrans.token(card, callback);
               return false;
             });
