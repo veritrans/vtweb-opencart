@@ -188,6 +188,7 @@ class ControllerPaymentVeritrans extends Controller {
     if ($this->config->get('veritrans_payment_type') == 'vtdirect') {
     	$veritrans->payment_type = Veritrans::VT_DIRECT;
     	$veritrans->token_id = $_POST['token_id'];
+    	var_dump($_POST);
     } 
     else 
     {
