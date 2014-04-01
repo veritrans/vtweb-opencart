@@ -99,7 +99,9 @@
               };
 
               function _success(d) {
+                console.log(d.data.token_id);
                 $('#token_id').val(d.data.token_id); // store token data in input #token_id
+                console.log($('#token_id').val());
                 $("#payment-form")[0].submit(); //submits Token to merchant server
               };
 
@@ -108,7 +110,7 @@
                 $('.submit-button').removeAttr("disabled");
               };
 
-              $("#payment-form")[0].submit(function(e){
+              $("#payment-form").on('submit', function(e){
                 $('.submit-button').attr("disabled", "disabled"); // disable the submit button
                 Veritrans.tokenGet(_cardSet, _success, _error);
                 return false;
