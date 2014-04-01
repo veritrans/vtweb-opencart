@@ -37,7 +37,7 @@
           <tr>
             <td><span class="required">*</span> <?php echo $entry_api_version; ?></td>
             <td>
-              <?php $options = array('1' => 'v1', '2' => 'v2'); ?>
+              <?php $options = array('1' => 'v1'); ?>
               <select name="veritrans_api_version" id="veritransApiVersion">
                 <?php foreach ($options as $key => $value): ?>
                   <option value="<?php echo $key ?>" <?php if ($key == $veritrans_api_version) echo 'selected' ?> ><?php echo $value ?></option>

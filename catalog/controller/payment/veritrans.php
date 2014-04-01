@@ -383,17 +383,19 @@ class ControllerPaymentVeritrans extends Controller {
     if ($this->config->get('veritrans_api_version') == 2)
     {
 
+      $veritrans_notification = new VeritransNotification();
+
+      // Debug
+      ob_start();
+      var_dump($veritrans_notification);
+      $contents = ob_get_contents();
+      ob_end_clean();
+      error_log($contents);
+
     } else
     {
       $veritrans_notification = new VeritransNotification();
       $token_merchant = $this->model_payment_veritrans->getTokenMerchant($veritrans_notification->orderId);
-
-      // Debug
-      // ob_start();
-      // var_dump($veritrans_notification);
-      // $contents = ob_get_contents();
-      // ob_end_clean();
-      // error_log($contents);
 
       // Verify the Merchant Key
       if($veritrans_notification->mStatus && $token_merchant == $veritrans_notification->TOKEN_MERCHANT) 
