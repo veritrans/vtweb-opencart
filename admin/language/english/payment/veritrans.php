@@ -11,14 +11,24 @@ $_['text_successful']    = 'Always Successful';
 $_['text_fail']          = 'Always Fail';
 
 // Entry
-$_['entry_merchant']     = 'Merchant ID:';
-$_['entry_hash']     	 = 'Merchant Hash Key';
+$_['entry_api_version']  = 'API Version';
+$_['entry_environment']  = 'Environment'; // v2 API only
+$_['entry_merchant']     = 'Merchant ID:'; // v1 API only
+$_['entry_hash']     	   = 'Merchant Hash Key'; // v1 API only
+$_['entry_client_key']   = 'Client Key'; // v2 API only
+$_['entry_server_key']   = 'Server Key'; // v2 API only
+$_['entry_3d_secure']    = 'Enable 3D Secure?';
+$_['entry_payment_type'] = 'Payment Type';
 $_['entry_test']         = 'Test Mode:';
 $_['entry_total']        = 'Total:<br /><span class="help">The checkout total the order must reach before this payment method becomes active.</span>';
 $_['entry_order_status'] = 'Order Status:';
 $_['entry_geo_zone']     = 'Geo Zone:';
 $_['entry_status']       = 'Status:';
 $_['entry_sort_order']   = 'Sort Order:';
+$_['entry_enable_bank_installment'] = 'Enable BANK installments?';
+$_['entry_currency_conversion'] = 'Currency conversion to IDR';
+$_['entry_client_key_v1']   = 'VT-Direct Client Key';
+$_['entry_server_key_v1']   = 'VT-Direct Server Key';
 
 // Error
 $_['error_permission']   = 'Warning: You do not have permission to modify payment SagePay!';
