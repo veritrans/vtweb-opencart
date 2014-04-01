@@ -235,7 +235,7 @@ class ControllerPaymentVeritrans extends Controller {
 
     	if ($this->config->get('veritrans_api_version') == 2)
     	{
-    		if ($this->data['key']['transaction_status'] == 'capture')
+        if ($this->data['key']['transaction_status'] == 'capture')
     		{
     			$paymentSuccess = TRUE;
     		} else

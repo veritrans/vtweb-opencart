@@ -111,7 +111,6 @@
               };
 
               $("#payment-form").on('submit', function(e){
-                $('.submit-button').attr("disabled", "disabled"); // disable the submit button
                 Veritrans.tokenGet(_cardSet, _success, _error);
                 return false;
               });
@@ -155,8 +154,7 @@
               }
             }
 
-            $("#payment-form").submit(function(e){
-              $('.submit-button').attr("disabled", "disabled"); // disable the submit button
+            $("#payment-form").on('submit', function(e){
               Veritrans.token(card, callback);
               return false;
             });
