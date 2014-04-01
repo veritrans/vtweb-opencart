@@ -257,7 +257,7 @@ class ControllerPaymentVeritrans extends Controller {
     	
     	$this->data['key'] = $veritrans->getTokens();
 
-    	// handle charge result		
+      // handle charge result		
 			if(!$this->data['key']) {
 				$veritrans_error = "";
 				if ($veritrans->error != NULL) {
@@ -302,7 +302,7 @@ class ControllerPaymentVeritrans extends Controller {
 		{
       if ($this->config->get('veritrans_api_version') == 2) {
         $this->cart->clear();
-        $this->redirect($this->data['key']->redirect_url);
+        $this->redirect($this->data['key']['redirect_url']);
       } else {
         $this->cart->clear();
         $this->template = 'default/template/payment/veritrans_v1_vtweb.tpl';
@@ -383,17 +383,19 @@ class ControllerPaymentVeritrans extends Controller {
     if ($this->config->get('veritrans_api_version') == 2)
     {
 
+      $veritrans_notification = new VeritransNotification();
+
+      // Debug
+      ob_start();
+      var_dump($veritrans_notification);
+      $contents = ob_get_contents();
+      ob_end_clean();
+      error_log($contents);
+
     } else
     {
       $veritrans_notification = new VeritransNotification();
       $token_merchant = $this->model_payment_veritrans->getTokenMerchant($veritrans_notification->orderId);
-
-      // Debug
-      // ob_start();
-      // var_dump($veritrans_notification);
-      // $contents = ob_get_contents();
-      // ob_end_clean();
-      // error_log($contents);
 
       // Verify the Merchant Key
       if($veritrans_notification->mStatus && $token_merchant == $veritrans_notification->TOKEN_MERCHANT) 
