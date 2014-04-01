@@ -257,7 +257,7 @@ class ControllerPaymentVeritrans extends Controller {
     	
     	$this->data['key'] = $veritrans->getTokens();
 
-    	// handle charge result		
+      // handle charge result		
 			if(!$this->data['key']) {
 				$veritrans_error = "";
 				if ($veritrans->error != NULL) {
@@ -302,7 +302,7 @@ class ControllerPaymentVeritrans extends Controller {
 		{
       if ($this->config->get('veritrans_api_version') == 2) {
         $this->cart->clear();
-        $this->redirect($this->data['key']->redirect_url);
+        $this->redirect($this->data['key']['redirect_url']);
       } else {
         $this->cart->clear();
         $this->template = 'default/template/payment/veritrans_v1_vtweb.tpl';
