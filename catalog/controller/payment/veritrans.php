@@ -289,7 +289,7 @@ class ControllerPaymentVeritrans extends Controller {
         $this->cart->clear();
         $this->redirect($this->data['key']['redirect_url']);
       } else {
-        // $this->cart->clear();
+        $this->cart->clear();
         $this->template = 'default/template/payment/veritrans_v1_vtweb.tpl';
         $this->response->setOutput($this->render(TRUE));
       }
