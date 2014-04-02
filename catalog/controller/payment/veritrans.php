@@ -25,6 +25,7 @@ class ControllerPaymentVeritrans extends Controller {
 		
 		$this->load->model('payment/veritrans');
 		$this->load->model('checkout/order');
+    $this->load->model('total/shipping');
 		$this->language->load('payment/veritrans');
 		
 		$this->data['errors'] = array();
@@ -103,8 +104,10 @@ class ControllerPaymentVeritrans extends Controller {
 		// The gross amount MUST NOT be formatted.
 		
 		$commodities = array();
+    $taxes = array();
 		$index = 1;
 		$productprice = 0;
+
 		foreach ($products as $product){
 			if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
 				$product['price'] = $this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax'));
@@ -112,46 +115,28 @@ class ControllerPaymentVeritrans extends Controller {
 			$commodity_item = array("item_id" => $product['product_id'],
 				"price" => $product['price'],
 				"quantity" => $product['quantity'],
-				"item_name1" => (substr($product['name'],0,17))."...",
-				"item_name2" => (substr($product['name'],0,17))."...");
+				"item_name1" => (substr($product['name'],0,17)). "...",
+				"item_name2" => (substr($product['name'],0,17)). "...");
 						
 			array_push($commodities, $commodity_item);
 			$productprice += $product['price'] * $product['quantity'];
 		}
 
-		// calculate shipping
-		if ($this->cart->hasShipping()) {
-			
-			if($this->tax->calculate($this->config->get('flat_cost'), $this->config->get('flat_tax_class_id'), $this->config->get('config_tax')) != 0) {
-				
-				// TODO: change this to the selected shipping rate
-				$shipping_cost = $this->tax->calculate($this->config->get('flat_cost'), $this->config->get('flat_tax_class_id'), $this->config->get('config_tax'));
-
-			} else {
-
-				$shipping_cost = $veritrans->gross_amount - $productprice;
-
-			}
-			
-			$shipping_fee = array("item_id" => "0",
-					"price" => $shipping_cost,
-					"quantity" => 1,
-					"item_name1" => "SHIPPING FEE",
-					"item_name2" => "SHIPPING FEE");
-			
-			array_push($commodities, $shipping_fee);
-			$productprice += $shipping_cost;
-
-		}
-
-		if ($veritrans->gross_amount != $productprice) {
-			$fee = array("item_id" => "FEE",
-					"price" => $veritrans->gross_amount - $productprice,
-					"quantity" => 1,
-					"item_name1" => "FEE",
-					"item_name2" => "FEE");
-			array_push($commodities, $fee);
-		}
+    if($this->cart->hasShipping())
+    {
+      $shipping_info = $this->session->data['shipping_method'];
+      if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+        $shipping_info['cost'] = $this->tax->calculate($shipping_info['cost'], $shipping_info['tax_class_id'], $this->config->get('config_tax'));
+      }      
+      array_push($commodities, array(
+        'item_id' => 'SHIPPING',
+        'price' => $shipping_info['cost'],
+        'quantity' => 1,
+        "item_name1" => (substr($shipping_info['title'], 0, 17)) . "...",
+        "item_name2" => (substr($shipping_info['title'], 0, 17)) . "..."
+        ));
+      $productprice += $shipping_info['cost'];
+    }
 
 		// convert all item prices to IDR
 		if ($this->config->get('config_currency') != 'IDR')
