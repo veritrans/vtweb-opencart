@@ -119,7 +119,7 @@
           <!-- Server Key (v2-specific) -->
 
           <tr>
-            <td><span class="required">*</span> <?php echo $entry_api_version; ?></td>
+            <td><span class="required">*</span> <?php echo $entry_payment_type; ?></td>
             <td>
               <?php $options = array('vtweb' => 'VT-Web', 'vtdirect' => 'VT-Direct'); ?>
               <select name="veritrans_payment_type">
