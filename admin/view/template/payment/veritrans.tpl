@@ -162,6 +162,24 @@
           </tr>
           <!-- 3D Secure -->
 
+          <?php foreach (array('vtweb_success_mapping', 'vtweb_failure_mapping', 'vtweb_challenge_mapping') as $status): ?>
+            <tr class="vtweb_settings">
+              <td><span class="required">*</span> <?php echo ${'entry_' . $status} ?></td>
+              <td>
+                <select name="<?php echo 'veritrans_' . $status ?>" id="veritransPaymentType">
+                  <?php foreach ($order_statuses as $option): ?>
+                    <option value="<?php echo $option['order_status_id'] ?>" <?php if ($option['order_status_id'] == ${'veritrans_' . $status}) echo 'selected' ?> ><?php echo $option['name'] ?></option>
+                  <?php endforeach ?>
+                </select>
+                <?php if ($error_merchant): ?>
+                  <span class="error"><?php echo $error_merchant; ?></span>
+                <?php endif; ?>
+              </td>
+            </tr>
+            
+          <?php endforeach ?>
+          <!-- VTWeb Mapping -->
+
           <?php if (!$this->currency->has('IDR')): ?>
             <tr>
               <td><span class="required">*</span> <?php echo $entry_currency_conversion; ?></td>

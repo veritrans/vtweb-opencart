@@ -385,14 +385,23 @@ class ControllerPaymentVeritrans extends Controller {
       $veritrans_notification = new VeritransNotification();
       $token_merchant = $this->model_payment_veritrans->getTokenMerchant($veritrans_notification->orderId);
 
-      // Verify the Merchant Key
-      if($veritrans_notification->mStatus && $token_merchant == $veritrans_notification->TOKEN_MERCHANT) 
+      if ($veritrans_notification->mStatus != 'fatal')
       {
-        $this->model_checkout_order->confirm($veritrans_notification->orderId, 5, 'success');
-      } else
-      {
-        $this->model_checkout_order->confirm($veritrans_notification->orderId, 10, 'failed');
-      }
+        // Verify the Merchant Key
+        if($token_merchant == $veritrans_notification->TOKEN_MERCHANT) 
+        {
+          if ($veritrans_notification->mStatus == 'success')
+          {
+            $this->model_checkout_order->confirm($veritrans_notification->orderId, $this->config->get('veritrans_vtweb_success_mapping'), 'VT-Web payment successful.');  
+          } else if ($veritrans_notification->mStatus == 'challenge')
+          {
+            $this->model_checkout_order->confirm($veritrans_notification->orderId, $this->config->get('veritrans_vtweb_challenge_mapping'), 'VT-Web payment challenged. Please take action on your Merchant Administration Portal.');  
+          } else if ($veritrans_notification->mStatus == 'failure')
+          {
+            $this->model_checkout_order->confirm($veritrans_notification->orderId, $this->config->get('veritrans_vtweb_failure_mapping'), 'VT-Web payment failed.');  
+          }         
+        }
+      }       
     }	
   }
 }
