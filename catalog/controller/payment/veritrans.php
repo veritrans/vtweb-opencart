@@ -213,6 +213,9 @@ class ControllerPaymentVeritrans extends Controller {
     	$veritrans->installment_terms = $installment_terms;
     }
 
+    // enable smart sanitization
+    $veritrans->force_sanitization = TRUE;
+
     // if we use VT-Direct, charge the CC. If we use VT-Web, display the form
     if ($veritrans->payment_type == Veritrans::VT_DIRECT) {
     	
