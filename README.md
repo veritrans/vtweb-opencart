@@ -21,9 +21,9 @@ This is the official Veritrans plug-in for the Opencart e-commerce platform.
    
   * **Payment Notification URL** in Settings to `http://[your shop's homepage]/index.php?route=payment/veritrans/payment_notification`
 
-  * **Finish Redirect URL** in Settings to `http://[your shop's homepage]/index.php?route=payment/veritrans/success`
+  * **Finish Redirect URL** in Settings to `http://[your shop's homepage]/index.php?route=checkout/success`
 
-  * **Error Redirect URL** in Settings to `http://[your shop's homepage]/index.php?route=payment/veritrans/failure`
+  * **Error Redirect URL** in Settings to `http://[your shop's homepage]/index.php?route=checkout/failure`
 
   * **Unfinish Redirect URL** in Settings to `http://[your shop's homepage]/index.php`
 
