@@ -64,7 +64,7 @@
           </tr>
           <!-- Environment (v2-specific) -->
 
-          <tr class="v1_settings">
+          <tr class="v1_settings vtweb_settings">
             <td><span class="required">*</span> <?php echo $entry_merchant; ?></td>
             <td><input type="text" name="veritrans_merchant" value="<?php echo $veritrans_merchant; ?>" />
               <?php if ($error_merchant): ?>
@@ -73,7 +73,7 @@
           </tr>
           <!-- Merchant ID (v1-specific) -->
 
-          <tr class="v1_settings">
+          <tr class="v1_settings vtweb_settings">
             <td><span class="required">*</span> <?php echo $entry_hash; ?></td>
             <td><input type="text" name="veritrans_hash" value="<?php echo $veritrans_hash; ?>" />
               <?php if ($error_hash): ?>
@@ -82,7 +82,7 @@
           </tr>
           <!-- Merchant Hash Key (v1-specific) -->
 
-          <tr class="v1_settings">
+          <tr class="v1_settings vtdirect_settings">
             <td><span class="required">*</span> <?php echo $entry_client_key_v1; ?></td>
             <td><input type="text" name="veritrans_client_key_v1" value="<?php echo $veritrans_client_key_v1; ?>" />
               <?php if ($error_hash): ?>
@@ -91,7 +91,7 @@
           </tr>
           <!-- VT-Direct Client Key (v1-specific) -->
 
-          <tr class="v1_settings">
+          <tr class="v1_settings vtdirect_settings">
             <td><span class="required">*</span> <?php echo $entry_server_key_v1; ?></td>
             <td><input type="text" name="veritrans_server_key_v1" value="<?php echo $veritrans_server_key_v1; ?>" />
               <?php if ($error_hash): ?>
@@ -122,7 +122,7 @@
             <td><span class="required">*</span> <?php echo $entry_payment_type; ?></td>
             <td>
               <?php $options = array('vtweb' => 'VT-Web', 'vtdirect' => 'VT-Direct'); ?>
-              <select name="veritrans_payment_type">
+              <select name="veritrans_payment_type" id="veritransPaymentType">
                 <?php foreach ($options as $key => $value): ?>
                   <option value="<?php echo $key ?>" <?php if ($key == $veritrans_payment_type) echo 'selected' ?> ><?php echo $value ?></option>
                 <?php endforeach ?>
@@ -135,7 +135,7 @@
 
           <?php $banks = array('bni' => 'BNI', 'cimb' => 'CIMB', 'mandiri' => 'Mandiri') ?>
           <?php foreach ($banks as $bank_key => $bank_value): ?>
-            <tr>
+            <tr class="vtweb_settings">
               <td>
                 <?php echo preg_replace('/BANK/', $bank_value, $entry_enable_bank_installment); ?>
               </td>
@@ -213,10 +213,30 @@
         $('.v2_settings').show();
       }
     }
+
+    function paymentApiDependentOptions() {
+      var payment_type = $('#veritransPaymentType').val();
+      if (payment_type == 'vtweb')
+      {
+        $('.vtweb_settings').show();
+        $('.vtdirect_settings').hide();
+      } else
+      {
+        $('.vtweb_settings').hide();
+        $('.vtdirect_settings').show();
+      }
+    }
+
     versionDependentOptions();
+    paymentApiDependentOptions();
+
     $("#veritransApiVersion").on('change', function(e, data) {
       versionDependentOptions();
     });
+    $("#veritransPaymentType").on('change', function(e, data) {
+      paymentApiDependentOptions();
+    });
+
   });
 </script>
 <?php echo $footer; ?>
