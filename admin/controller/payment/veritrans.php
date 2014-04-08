@@ -9,6 +9,7 @@ class ControllerPaymentVeritrans extends Controller {
 		$this->document->setTitle($this->language->get('heading_title'));
 
 		$this->load->model('setting/setting');
+		$this->load->model('localisation/order_status');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
 			$this->model_setting_setting->editSetting('veritrans', $this->request->post);
@@ -47,6 +48,9 @@ class ControllerPaymentVeritrans extends Controller {
 			'entry_client_key',
 			'entry_server_key_v1',
 			'entry_client_key_v1',
+			'entry_vtweb_success_mapping',
+			'entry_vtweb_failure_mapping',
+			'entry_vtweb_challenge_mapping',
 
 			'button_save',
 			'button_cancel'
@@ -116,7 +120,10 @@ class ControllerPaymentVeritrans extends Controller {
 			'veritrans_currency_conversion',
 			'veritrans_status',
 			'veritrans_client_key_v1',
-			'veritrans_client_key_v2'
+			'veritrans_client_key_v2',
+			'veritrans_vtweb_success_mapping',
+			'veritrans_vtweb_failure_mapping',
+			'veritrans_vtweb_challenge_mapping'
 			);
 
 		foreach ($inputs as $input) {

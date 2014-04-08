@@ -29,6 +29,9 @@ $_['entry_enable_bank_installment'] = 'Enable BANK installments?';
 $_['entry_currency_conversion'] = 'Currency conversion to IDR';
 $_['entry_client_key_v1']   = 'VT-Direct Client Key';
 $_['entry_server_key_v1']   = 'VT-Direct Server Key';
+$_['entry_vtweb_success_mapping'] = 'Map Payment Success Status to Order Status:';
+$_['entry_vtweb_challenge_mapping'] = 'Map Payment Challenge Status to Order Status:';
+$_['entry_vtweb_failure_mapping'] = 'Map Payment Failure Status to Order Status:';
 
 // Error
 $_['error_permission']   = 'Warning: You do not have permission to modify payment SagePay!';
