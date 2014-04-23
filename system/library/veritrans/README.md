@@ -53,8 +53,9 @@ At initialization, the version will be always initialized to `VERSION_STABLE`, w
 You can set the version you want to use by manipulating the `version` property.
 
 ```php
-// Set the API version to v2 instead of the VERSION_STABLE (v1)
-$veritrans->version = 2;
+$veritrans->version = 1; // Please use v1 at the moment...
+// $veritrans->version = 2; // ...because Veritrans v2 is still experimental
+$veritrans->version = Veritrans::VERSION_STABLE; // or use VERSION_STABLE constant
 ```
 
 ### Environment
@@ -68,7 +69,7 @@ Veritrans PHP will default to the __Development__ environment. You can set the e
 
 ```php
 // Set the environment to production
-$veritrans->environment = Veritrans::ENVIRONMENT_PRODUCTION;
+$veritrans->environment = Veritrans::ENVIRONMENT_DEVELOPMENT; // change to ENVIRONMENT_PRODUCTION in your production server
 ```
 
 ### Payment types
@@ -98,7 +99,7 @@ class Veritrans {
 At initialization, Veritrans defaults to `VT_WEB` type. You can change the payment method by accessing the `payment_type` method.
 
 ```php
-$veritrans->payment_type = Veritrans::VT_DIRECT;
+$veritrans->payment_type = Veritrans::VT_WEB; // change to VT_DIRECT if you wish to use VT-Direct payment type
 ```
 
 ### Setting up customer's billing information
@@ -172,8 +173,8 @@ Next, you need to tell Veritrans the detail of the order. The following code ill
 // Set commodity items
 $items = array(
 			array(
-				"item_id" => 'itemsatu',
-				"price" => 250000,
+				"item_id" => 'SHIPPING_COST', // please also include the shipping cost here, if available.
+				"price" => 250000, // price must be in IDR. If you have discounts, please do it before you assign it here.
 				"quantity"   => 1,
 				"item_name1" => 'sepatu',
 				"item_name2" => 'Shoes' // item_name2 is only obligatory in V1 API's VT-Web method
@@ -183,7 +184,7 @@ $items = array(
 				"price" => 500000,
 				"quantity"   => 2,
 				"item_name1" => 'Tas',
-				"item_name2" => 'Bag' // item_name2 is only obligatory in V1 API's VT-Web method
+				"item_name2" => 'Bag'
 			),
 		);
 $veritrans->items = $items;
@@ -234,11 +235,21 @@ There are myriads of options to be set with Veritrans. Please consult [this page
 
 ### Forcing sanitization
 
-If you don't want to sanitize the parameters above yourself based on rules [here](http://docs.veritrans.co.id/vtweb/api.html) and [here](http://docs.veritrans.co.id/vtdirect/integrating_vtdirect.html), it is HIGHLY recommended to turn on the auto-sanitization feature.
+If you don't want to sanitize the parameters above yourself based on rules [here](http://docs.veritrans.co.id/vtweb/api.html) and [here](http://docs.veritrans.co.id/vtdirect/integrating_vtdirect.html), it is HIGHLY recommended to turn on the auto-sanitization feature to avoid headache and keep the Veritrans server happy :smile:
 
 ```php
 $veritrans->force_sanitization = TRUE; // defaults to FALSE
 ```
+
+It will:
+
+1. Trim the strings whose length exceed the maximum length.
+
+2. Take out all blacklisted characters from the parameters.
+
+3. Convert all prices to integer format.
+
+4. Convert country code to ISO 3166-1 alpha-3 format.
 
 ## Step 2: Using the API
 
