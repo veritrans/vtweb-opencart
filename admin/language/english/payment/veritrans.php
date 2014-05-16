@@ -39,4 +39,5 @@ $_['error_merchant']     = 'Merchant ID is required!';
 $_['error_hash']    	 	 = 'Merchant Hash Key is required!';
 $_['error_client_key']   = 'Client Key is required!';
 $_['error_server_key']   = 'Server Key is required!';
+$_['error_currency_conversion'] = 'Currency conversion rate is required when IDR currency is not installed in the system!';
 ?>

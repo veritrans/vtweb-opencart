@@ -289,8 +289,11 @@ class ControllerPaymentVeritrans extends Controller {
 		if ($this->config->get('veritrans_payment_type') == 'vtweb')
 		{
       if ($this->config->get('veritrans_api_version') == 2) {
-        $this->cart->clear();
-        $this->redirect($this->data['key']['redirect_url']);
+        //$this->cart->clear();
+        //$this->redirect($this->data['key']['redirect_url']);
+        var_dump($this->data['key']) ;
+        var_dump($veritrans->items);
+        var_dump($veritrans->gross_amount);
       } else {
         $this->cart->clear();
         $this->template = 'default/template/payment/veritrans_v1_vtweb.tpl';
