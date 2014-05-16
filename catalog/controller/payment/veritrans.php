@@ -1,7 +1,7 @@
 <?php
 
 require_once(DIR_SYSTEM . 'library/veritrans/veritrans.php');
-require_once(DIR_SYSTEM . 'library/veritrans/veritrans_notification.php');
+require_once(DIR_SYSTEM . 'library/veritrans/lib/veritrans_notification.php');
 
 class ControllerPaymentVeritrans extends Controller {
   
