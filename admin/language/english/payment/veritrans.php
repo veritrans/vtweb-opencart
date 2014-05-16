@@ -34,7 +34,9 @@ $_['entry_vtweb_challenge_mapping'] = 'Map Payment Challenge Status to Order Sta
 $_['entry_vtweb_failure_mapping'] = 'Map Payment Failure Status to Order Status:';
 
 // Error
-$_['error_permission']   = 'Warning: You do not have permission to modify payment SagePay!';
-$_['error_merchant']     = 'Merchant ID Required!';
-$_['error_hash']    	 = 'Merchant Hash Key Required!';
+$_['error_permission']   = 'Warning: You do not have permission to modify the Veritrans Payment!';
+$_['error_merchant']     = 'Merchant ID is required!';
+$_['error_hash']    	 	 = 'Merchant Hash Key is required!';
+$_['error_client_key']   = 'Client Key is required!';
+$_['error_server_key']   = 'Server Key is required!';
 ?>

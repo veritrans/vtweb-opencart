@@ -60,25 +60,13 @@ class ControllerPaymentVeritrans extends Controller {
 			$this->data[$language_entry] = $this->language->get($language_entry);
 		}
 
- 		if (isset($this->error['warning'])) {
-			$this->data['error_warning'] = $this->error['warning'];
+		if (isset($this->error)) {
+			$this->data['error'] = $this->error;
 		} else {
-			$this->data['error_warning'] = '';
+			$this->data['error'] = array();
 		}
 
- 		if (isset($this->error['merchant'])) {
-			$this->data['error_merchant'] = $this->error['merchant'];
-		} else {
-			$this->data['error_merchant'] = '';
-		}
-
- 		if (isset($this->error['hash'])) {
-			$this->data['error_hash'] = $this->error['hash'];
-		} else {
-			$this->data['error_hash'] = '';
-		}
-
-		$this->data['breadcrumbs'] = array();
+ 		$this->data['breadcrumbs'] = array();
 
  		$this->data['breadcrumbs'][] = array(
      	'text' => $this->language->get('text_home'),
@@ -152,17 +140,58 @@ class ControllerPaymentVeritrans extends Controller {
 	}
 
 	protected function validate() {
+
+		// default values
+		$version = $this->request->post['veritrans_api_version'];
+		if (!in_array($version, array(1, 2)))
+			$version = 1;
+
+		$payment_type = $this->request->post['veritrans_payment_type'];
+		if (!in_array($payment_type, array('vtweb', 'vtdirect')))
+			$payment_type = 'vtweb';
+
 		if (!$this->user->hasPermission('modify', 'payment/veritrans')) {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
+		
+		// version-specific validation
+		if ($version == 1)
+		{
+			// check for empty values
+			if ($payment_type == 'vtweb')
+			{
+				if (!$this->request->post['veritrans_merchant']) {
+					$this->error['merchant'] = $this->language->get('error_merchant');
+				}
 
-		if (!$this->request->post['veritrans_merchant']) {
-			$this->error['merchant'] = $this->language->get('error_merchant');
-		}
+				if (!$this->request->post['veritrans_hash']) {
+					$this->error['veritrans'] = $this->language->get('error_hash');
+				}
+			} else
+			{
+				if (!$this->request->post['veritrans_client_key_v1']) {
+					$this->error['client_key_v1'] = $this->language->get('error_client_key');
+				}
 
-		if (!$this->request->post['veritrans_hash']) {
-			$this->error['veritrans'] = $this->language->get('error_hash');
-		}
+				if (!$this->request->post['veritrans_server_key_v1']) {
+					$this->error['server_key_v1'] = $this->language->get('error_server_key');
+				}	
+			}
+		} else if ($version == 2)
+		{
+			// default values
+			if (!$this->request->post['veritrans_environment'])
+				$this->request->post['veritrans_environment'] = 1;
+
+			// check for empty values
+			if (!$this->request->post['veritrans_client_key_v2']) {
+				$this->error['client_key_v2'] = $this->language->get('error_client_key');
+			}
+
+			if (!$this->request->post['veritrans_server_key_v2']) {
+				$this->error['server_key_v2'] = $this->language->get('error_server_key');
+			}
+		}		
 
 		if (!$this->error) {
 			return true;
