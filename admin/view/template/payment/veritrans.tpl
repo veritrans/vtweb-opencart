@@ -25,12 +25,14 @@
 
           <tr>
             <td><?php echo $entry_status; ?></td>
-            <td><select name="veritrans_status">
-              <?php $options = array('1' => $text_enabled, '0' => $text_disabled) ?>
-              <?php foreach ($options as $key => $value): ?>
-                <option value="<?php echo $key ?>" <?php if ($key == $veritrans_status) echo 'selected' ?> ><?php echo $value ?></option>
-              <?php endforeach ?>
-              </select></td>
+            <td>
+              <select name="veritrans_status">
+                <?php $options = array('1' => $text_enabled, '0' => $text_disabled) ?>
+                <?php foreach ($options as $key => $value): ?>
+                  <option value="<?php echo $key ?>" <?php if ($key == $veritrans_status) echo 'selected' ?> ><?php echo $value ?></option>
+                <?php endforeach ?>
+              </select>
+            </td>
           </tr>
           <!-- Status -->
 
@@ -43,6 +45,7 @@
                   <option value="<?php echo $key ?>" <?php if ($key == $veritrans_api_version) echo 'selected' ?> ><?php echo $value ?></option>
                 <?php endforeach ?>
               </select>
+            </td>
           </tr>
           <!-- API Version -->
 
@@ -57,7 +60,8 @@
               </select>
               <?php if (isset($error['environment'])): ?>
                 <span class="error"><?php echo $error['environment']; ?></span>
-              <?php endif; ?></td>
+              <?php endif; ?>
+            </td>
           </tr>
           <!-- Environment (v2-specific) -->
 
@@ -65,8 +69,9 @@
             <td><span class="required">*</span> <?php echo $entry_merchant; ?></td>
             <td><input type="text" name="veritrans_merchant" value="<?php echo $veritrans_merchant; ?>" />
               <?php if (isset($error['merchant'])): ?>
-              <span class="error"><?php echo $error['merchant']; ?></span>
-              <?php endif; ?></td>
+                <span class="error"><?php echo $error['merchant']; ?></span>
+              <?php endif; ?>
+            </td>
           </tr>
           <!-- Merchant ID (v1-specific) -->
 
@@ -74,8 +79,9 @@
             <td><span class="required">*</span> <?php echo $entry_hash; ?></td>
             <td><input type="text" name="veritrans_hash" value="<?php echo $veritrans_hash; ?>" />
               <?php if (isset($error['hash'])): ?>
-              <span class="error"><?php echo $error['hash']; ?></span>
-              <?php endif; ?></td>
+                <span class="error"><?php echo $error['hash']; ?></span>
+              <?php endif; ?>
+            </td>
           </tr>
           <!-- Merchant Hash Key (v1-specific) -->
 
@@ -83,8 +89,9 @@
             <td><span class="required">*</span> <?php echo $entry_client_key_v1; ?></td>
             <td><input type="text" name="veritrans_client_key_v1" value="<?php echo $veritrans_client_key_v1; ?>" />
               <?php if (isset($error['client_key_v1'])): ?>
-              <span class="error"><?php echo $error['client_key_v1']; ?></span>
-              <?php endif; ?></td>
+                <span class="error"><?php echo $error['client_key_v1']; ?></span>
+              <?php endif; ?>
+            </td>
           </tr>
           <!-- VT-Direct Client Key (v1-specific) -->
 
@@ -92,8 +99,9 @@
             <td><span class="required">*</span> <?php echo $entry_server_key_v1; ?></td>
             <td><input type="text" name="veritrans_server_key_v1" value="<?php echo $veritrans_server_key_v1; ?>" />
               <?php if (isset($error['server_key_v1'])): ?>
-              <span class="error"><?php echo $error['server_key_v1']; ?></span>
-              <?php endif; ?></td>
+                <span class="error"><?php echo $error['server_key_v1']; ?></span>
+              <?php endif; ?>
+            </td>
           </tr>
           <!-- VT-Direct Server Key (v1-specific) -->
 
@@ -102,7 +110,8 @@
             <td><input type="text" name="veritrans_client_key_v2" value="<?php echo $veritrans_client_key_v2; ?>" />
               <?php if (isset($error['client_key_v2'])): ?>
               <span class="error"><?php echo $error['client_key_v2']; ?></span>
-              <?php endif; ?></td>
+              <?php endif; ?>
+            </td>
           </tr>
           <!-- Client Key (v2-specific) -->
           
@@ -111,7 +120,8 @@
             <td><input type="text" name="veritrans_server_key_v2" value="<?php echo $veritrans_server_key_v2; ?>" />
               <?php if (isset($error['server_key_v2'])): ?>
               <span class="error"><?php echo $error['server_key_v2']; ?></span>
-              <?php endif; ?></td>
+              <?php endif; ?>
+            </td>
           </tr>
           <!-- Server Key (v2-specific) -->
 
@@ -124,6 +134,7 @@
                   <option value="<?php echo $key ?>" <?php if ($key == $veritrans_payment_type) echo 'selected' ?> ><?php echo $value ?></option>
                 <?php endforeach ?>
               </select>
+            </td>
           </tr>
           <!-- Payment Type -->
 
@@ -138,6 +149,7 @@
                 <?php foreach ($installment_terms as $installment_term): ?>
                   <input type="checkbox" name="veritrans_installment_terms[<?php echo $bank_key ?>][<?php echo $installment_term ?>]" <?php if ($veritrans_installment_terms && array_key_exists($bank_key, $veritrans_installment_terms) && array_key_exists($installment_term, $veritrans_installment_terms[$bank_key]) && $veritrans_installment_terms[$bank_key][$installment_term]) echo 'checked'; ?> /> <?php echo $installment_term ?>
                 <?php endforeach ?>
+              </td>
             </tr>  
           <?php endforeach ?>
           
@@ -229,15 +241,17 @@
       }
     }
 
-    versionDependentOptions();
-    paymentApiDependentOptions();
-
     $("#veritransApiVersion").on('change', function(e, data) {
       versionDependentOptions();
     });
     $("#veritransPaymentType").on('change', function(e, data) {
       paymentApiDependentOptions();
+      versionDependentOptions(); // don't forget to hide what's shown
     });
+
+    paymentApiDependentOptions(); // must be executed first
+    versionDependentOptions();
+    
 
   });
 </script>
