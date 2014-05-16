@@ -37,6 +37,16 @@
           <!-- Status -->
 
           <tr>
+            <td><span class="required">*</span> <?php echo $entry_display_name; ?></td>
+            <td><input type="text" name="veritrans_display_name" value="<?php echo $veritrans_display_name; ?>" />
+              <?php if (isset($error['display_name'])): ?>
+                <span class="error"><?php echo $error['display_name']; ?></span>
+              <?php endif; ?>
+            </td>
+          </tr>
+          <!-- Merchant ID (v1-specific) -->
+
+          <tr>
             <td><span class="required">*</span> <?php echo $entry_api_version; ?></td>
             <td>
               <?php $options = array('1' => 'v1', '2' => 'v2'); ?>

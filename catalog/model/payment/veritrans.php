@@ -23,7 +23,7 @@ class ModelPaymentVeritrans extends Model {
 		if ($status) {
       $method_data = array(
         'code'       => 'veritrans',
-        'title'      => $this->language->get('text_title'),
+        'title'      => $this->config->get('veritrans_display_name'),
 				'sort_order' => $this->config->get('veritrans_sort_order')
       );
     }

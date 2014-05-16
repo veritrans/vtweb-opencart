@@ -51,6 +51,7 @@ class ControllerPaymentVeritrans extends Controller {
 			'entry_vtweb_success_mapping',
 			'entry_vtweb_failure_mapping',
 			'entry_vtweb_challenge_mapping',
+			'entry_display_name',
 
 			'button_save',
 			'button_cancel'
@@ -111,7 +112,8 @@ class ControllerPaymentVeritrans extends Controller {
 			'veritrans_client_key_v2',
 			'veritrans_vtweb_success_mapping',
 			'veritrans_vtweb_failure_mapping',
-			'veritrans_vtweb_challenge_mapping'
+			'veritrans_vtweb_challenge_mapping',
+			'veritrans_display_name'
 			);
 
 		foreach ($inputs as $input) {
@@ -152,6 +154,11 @@ class ControllerPaymentVeritrans extends Controller {
 
 		if (!$this->user->hasPermission('modify', 'payment/veritrans')) {
 			$this->error['warning'] = $this->language->get('error_permission');
+		}
+
+		// check for empty values
+		if (!$this->request->post['veritrans_display_name']) {
+			$this->error['display_name'] = $this->language->get('error_display_name');
 		}
 		
 		// version-specific validation
