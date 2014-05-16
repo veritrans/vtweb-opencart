@@ -51,6 +51,7 @@ class ControllerPaymentVeritrans extends Controller {
 			'entry_vtweb_success_mapping',
 			'entry_vtweb_failure_mapping',
 			'entry_vtweb_challenge_mapping',
+			'entry_display_name',
 
 			'button_save',
 			'button_cancel'
@@ -60,25 +61,13 @@ class ControllerPaymentVeritrans extends Controller {
 			$this->data[$language_entry] = $this->language->get($language_entry);
 		}
 
- 		if (isset($this->error['warning'])) {
-			$this->data['error_warning'] = $this->error['warning'];
+		if (isset($this->error)) {
+			$this->data['error'] = $this->error;
 		} else {
-			$this->data['error_warning'] = '';
+			$this->data['error'] = array();
 		}
 
- 		if (isset($this->error['merchant'])) {
-			$this->data['error_merchant'] = $this->error['merchant'];
-		} else {
-			$this->data['error_merchant'] = '';
-		}
-
- 		if (isset($this->error['hash'])) {
-			$this->data['error_hash'] = $this->error['hash'];
-		} else {
-			$this->data['error_hash'] = '';
-		}
-
-		$this->data['breadcrumbs'] = array();
+ 		$this->data['breadcrumbs'] = array();
 
  		$this->data['breadcrumbs'][] = array(
      	'text' => $this->language->get('text_home'),
@@ -123,7 +112,8 @@ class ControllerPaymentVeritrans extends Controller {
 			'veritrans_client_key_v2',
 			'veritrans_vtweb_success_mapping',
 			'veritrans_vtweb_failure_mapping',
-			'veritrans_vtweb_challenge_mapping'
+			'veritrans_vtweb_challenge_mapping',
+			'veritrans_display_name'
 			);
 
 		foreach ($inputs as $input) {
@@ -152,17 +142,67 @@ class ControllerPaymentVeritrans extends Controller {
 	}
 
 	protected function validate() {
+
+		// default values
+		$version = $this->request->post['veritrans_api_version'];
+		if (!in_array($version, array(1, 2)))
+			$version = 1;
+
+		$payment_type = $this->request->post['veritrans_payment_type'];
+		if (!in_array($payment_type, array('vtweb', 'vtdirect')))
+			$payment_type = 'vtweb';
+
 		if (!$this->user->hasPermission('modify', 'payment/veritrans')) {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
 
-		if (!$this->request->post['veritrans_merchant']) {
-			$this->error['merchant'] = $this->language->get('error_merchant');
+		// check for empty values
+		if (!$this->request->post['veritrans_display_name']) {
+			$this->error['display_name'] = $this->language->get('error_display_name');
+		}
+		
+		// version-specific validation
+		if ($version == 1)
+		{
+			// check for empty values
+			if ($payment_type == 'vtweb')
+			{
+				if (!$this->request->post['veritrans_merchant']) {
+					$this->error['merchant'] = $this->language->get('error_merchant');
+				}
+
+				if (!$this->request->post['veritrans_hash']) {
+					$this->error['hash'] = $this->language->get('error_hash');
+				}
+			} else
+			{
+				if (!$this->request->post['veritrans_client_key_v1']) {
+					$this->error['client_key_v1'] = $this->language->get('error_client_key');
+				}
+
+				if (!$this->request->post['veritrans_server_key_v1']) {
+					$this->error['server_key_v1'] = $this->language->get('error_server_key');
+				}	
+			}
+		} else if ($version == 2)
+		{
+			// default values
+			if (!$this->request->post['veritrans_environment'])
+				$this->request->post['veritrans_environment'] = 1;
+
+			// check for empty values
+			if (!$this->request->post['veritrans_client_key_v2']) {
+				$this->error['client_key_v2'] = $this->language->get('error_client_key');
+			}
+
+			if (!$this->request->post['veritrans_server_key_v2']) {
+				$this->error['server_key_v2'] = $this->language->get('error_server_key');
+			}
 		}
 
-		if (!$this->request->post['veritrans_hash']) {
-			$this->error['veritrans'] = $this->language->get('error_hash');
-		}
+		// currency conversion to IDR
+		if (!$this->request->post['veritrans_currency_conversion'] && !$this->currency->has('IDR'))
+			$this->error['currency_conversion'] = $this->language->get('error_currency_conversion');
 
 		if (!$this->error) {
 			return true;

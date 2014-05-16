@@ -1,7 +1,7 @@
 <?php
 
 require_once(DIR_SYSTEM . 'library/veritrans/veritrans.php');
-require_once(DIR_SYSTEM . 'library/veritrans/veritrans_notification.php');
+require_once(DIR_SYSTEM . 'library/veritrans/lib/veritrans_notification.php');
 
 class ControllerPaymentVeritrans extends Controller {
   
@@ -372,13 +372,16 @@ class ControllerPaymentVeritrans extends Controller {
     {
 
       $veritrans_notification = new VeritransNotification();
-
-      // Debug
-      ob_start();
-      var_dump($veritrans_notification);
-      $contents = ob_get_contents();
-      ob_end_clean();
-      error_log($contents);
+      if ($veritrans_notification->status_code == 200)
+      {
+      	$this->model_checkout_order->confirm($veritrans_notification->order_id, $this->config->get('veritrans_vtweb_success_mapping'), 'VT-Web payment successful.');  
+      } else if ($veritrans_notification->status_code == 201)
+      {
+      	$this->model_checkout_order->confirm($veritrans_notification->order_id, $this->config->get('veritrans_vtweb_challenge_mapping'), 'VT-Web payment challenged. Please take action on your Merchant Administration Portal.');  
+      } else if ($veritrans_notification->status_code == 202)
+      {
+      	$this->model_checkout_order->confirm($veritrans_notification->order_id, $this->config->get('veritrans_vtweb_failure_mapping'), 'VT-Web payment failed.');  
+      }
 
     } else
     {

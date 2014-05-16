@@ -32,9 +32,14 @@ $_['entry_server_key_v1']   = 'VT-Direct Server Key';
 $_['entry_vtweb_success_mapping'] = 'Map Payment Success Status to Order Status:';
 $_['entry_vtweb_challenge_mapping'] = 'Map Payment Challenge Status to Order Status:';
 $_['entry_vtweb_failure_mapping'] = 'Map Payment Failure Status to Order Status:';
+$_['entry_display_name'] = 'Display name:';
 
 // Error
-$_['error_permission']   = 'Warning: You do not have permission to modify payment SagePay!';
-$_['error_merchant']     = 'Merchant ID Required!';
-$_['error_hash']    	 = 'Merchant Hash Key Required!';
+$_['error_permission']   = 'Warning: You do not have permission to modify the Veritrans Payment!';
+$_['error_merchant']     = 'Merchant ID is required!';
+$_['error_hash']    	 	 = 'Merchant Hash Key is required!';
+$_['error_client_key']   = 'Client Key is required!';
+$_['error_server_key']   = 'Server Key is required!';
+$_['error_currency_conversion'] = 'Currency conversion rate is required when IDR currency is not installed in the system!';
+$_['error_display_name'] = 'Please specify a name for this payment method!';
 ?>
