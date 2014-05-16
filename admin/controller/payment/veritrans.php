@@ -172,7 +172,7 @@ class ControllerPaymentVeritrans extends Controller {
 				}
 
 				if (!$this->request->post['veritrans_hash']) {
-					$this->error['veritrans'] = $this->language->get('error_hash');
+					$this->error['hash'] = $this->language->get('error_hash');
 				}
 			} else
 			{

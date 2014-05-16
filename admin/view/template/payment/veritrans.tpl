@@ -44,7 +44,7 @@
               <?php endif; ?>
             </td>
           </tr>
-          <!-- Merchant ID (v1-specific) -->
+          <!-- Display name -->
 
           <tr>
             <td><span class="required">*</span> <?php echo $entry_api_version; ?></td>
@@ -59,7 +59,7 @@
           </tr>
           <!-- API Version -->
 
-          <tr class="v2_settings">
+          <tr class="v2_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_environment; ?></td>
             <td>
               <select name="veritrans_environment">
@@ -75,7 +75,7 @@
           </tr>
           <!-- Environment (v2-specific) -->
 
-          <tr class="v1_settings vtweb_settings">
+          <tr class="v1_vtweb_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_merchant; ?></td>
             <td><input type="text" name="veritrans_merchant" value="<?php echo $veritrans_merchant; ?>" />
               <?php if (isset($error['merchant'])): ?>
@@ -85,7 +85,7 @@
           </tr>
           <!-- Merchant ID (v1-specific) -->
 
-          <tr class="v1_settings vtweb_settings">
+          <tr class="v1_vtweb_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_hash; ?></td>
             <td><input type="text" name="veritrans_hash" value="<?php echo $veritrans_hash; ?>" />
               <?php if (isset($error['hash'])): ?>
@@ -95,7 +95,7 @@
           </tr>
           <!-- Merchant Hash Key (v1-specific) -->
 
-          <tr class="v1_settings vtdirect_settings">
+          <tr class="v1_vtdirect_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_client_key_v1; ?></td>
             <td><input type="text" name="veritrans_client_key_v1" value="<?php echo $veritrans_client_key_v1; ?>" />
               <?php if (isset($error['client_key_v1'])): ?>
@@ -105,7 +105,7 @@
           </tr>
           <!-- VT-Direct Client Key (v1-specific) -->
 
-          <tr class="v1_settings vtdirect_settings">
+          <tr class="v1_vtdirect_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_server_key_v1; ?></td>
             <td><input type="text" name="veritrans_server_key_v1" value="<?php echo $veritrans_server_key_v1; ?>" />
               <?php if (isset($error['server_key_v1'])): ?>
@@ -115,7 +115,7 @@
           </tr>
           <!-- VT-Direct Server Key (v1-specific) -->
 
-          <tr class="v2_settings">
+          <tr class="v2_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_client_key; ?></td>
             <td><input type="text" name="veritrans_client_key_v2" value="<?php echo $veritrans_client_key_v2; ?>" />
               <?php if (isset($error['client_key_v2'])): ?>
@@ -125,7 +125,7 @@
           </tr>
           <!-- Client Key (v2-specific) -->
           
-          <tr class="v2_settings">
+          <tr class="v2_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_server_key; ?></td>
             <td><input type="text" name="veritrans_server_key_v2" value="<?php echo $veritrans_server_key_v2; ?>" />
               <?php if (isset($error['server_key_v2'])): ?>
@@ -150,7 +150,7 @@
 
           <?php $banks = array('bni' => 'BNI', 'cimb' => 'CIMB', 'mandiri' => 'Mandiri') ?>
           <?php foreach ($banks as $bank_key => $bank_value): ?>
-            <tr class="vtweb_settings">
+            <tr class="v1_vtweb_settings sensitive">
               <td>
                 <?php echo preg_replace('/BANK/', $bank_value, $entry_enable_bank_installment); ?>
               </td>
@@ -165,7 +165,7 @@
           
           <!-- Installment -->
 
-          <tr>
+          <tr class="v1_settings v2_vtweb_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_3d_secure; ?></td>
             <td><input type="checkbox" name="veritrans_3d_secure" <?php if ($veritrans_3d_secure) echo 'checked'; ?> />
             </td>
@@ -173,7 +173,7 @@
           <!-- 3D Secure -->
 
           <?php foreach (array('vtweb_success_mapping', 'vtweb_failure_mapping', 'vtweb_challenge_mapping') as $status): ?>
-            <tr class="vtweb_settings">
+            <tr class="">
               <td><span class="required">*</span> <?php echo ${'entry_' . $status} ?></td>
               <td>
                 <select name="<?php echo 'veritrans_' . $status ?>" id="veritransPaymentType">
@@ -229,42 +229,26 @@
 </div>
 <script>
   $(function() {
-    function versionDependentOptions() {
+    function sensitiveOptions() {
       var api_version = $('#veritransApiVersion').val();
-      if (api_version == 1)
-      {
-        $('.v2_settings').hide();
-        $('.v1_settings').show();
-      } else
-      {
-        $('.v1_settings').hide();
-        $('.v2_settings').show();
-      }
-    }
-
-    function paymentApiDependentOptions() {
       var payment_type = $('#veritransPaymentType').val();
-      if (payment_type == 'vtweb')
-      {
-        $('.vtweb_settings').show();
-        $('.vtdirect_settings').hide();
-      } else
-      {
-        $('.vtweb_settings').hide();
-        $('.vtdirect_settings').show();
-      }
+      var api_string = 'v' + api_version + '_settings';
+      var payment_type_string = payment_type;
+      var api_payment_type_string = 'v' + api_version + '_' + payment_type + '_settings';
+      $('.sensitive').hide();
+      $('.' + api_string).show();
+      $('.' + payment_type_string).show();
+      $('.' + api_payment_type_string).show();
     }
 
     $("#veritransApiVersion").on('change', function(e, data) {
-      versionDependentOptions();
+      sensitiveOptions();
     });
     $("#veritransPaymentType").on('change', function(e, data) {
-      paymentApiDependentOptions();
-      versionDependentOptions(); // don't forget to hide what's shown
+      sensitiveOptions();
     });
 
-    paymentApiDependentOptions(); // must be executed first
-    versionDependentOptions();
+    sensitiveOptions();
     
 
   });
