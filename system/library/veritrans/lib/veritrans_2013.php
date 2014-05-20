@@ -157,16 +157,13 @@ class Veritrans2013 {
     // Populate items
     $data['repeat_line'] = 0;
     foreach ($this->veritrans->items as $item) {
-      if ($item['price'] > 0)
-      {
-        $item_id[] = $this->_sanitize($item['item_id'], 'itemId');
-        $item_name1[] = $this->_sanitize($item['item_name1'], 'itemName');
-        $item_name2[] = $this->_sanitize($item['item_name2'], 'itemName');
-        $price[]      = $this->_sanitize($item['price'], 'price');
-        $quantity[]   = $item['quantity'];
-        
-        $data['repeat_line']++;
-      }
+      $item_id[] = $this->_sanitize($item['item_id'], 'itemId');
+      $item_name1[] = $this->_sanitize($item['item_name1'], 'itemName');
+      $item_name2[] = $this->_sanitize($item['item_name2'], 'itemName');
+      $price[]      = $this->_sanitize($item['price'], 'price');
+      $quantity[]   = $item['quantity'];
+      
+      $data['repeat_line']++;
     }
 
     $data['item_id']    = $item_id;
