@@ -289,8 +289,15 @@ class ControllerPaymentVeritrans extends Controller {
 		if ($this->config->get('veritrans_payment_type') == 'vtweb')
 		{
       if ($this->config->get('veritrans_api_version') == 2) {
-        $this->cart->clear();
-        $this->redirect($this->data['key']['redirect_url']);
+      	if ($this->data['key']['status_code'] == 201)
+      	{
+      		$this->cart->clear();        
+        	$this->redirect($this->data['key']['redirect_url']);
+      	} else
+      	{
+      		var_dump($this->data['key']);	
+        	exit;
+      	}        
       } else {
         $this->cart->clear();
         $this->template = 'default/template/payment/veritrans_v1_vtweb.tpl';
@@ -370,17 +377,25 @@ class ControllerPaymentVeritrans extends Controller {
 
     if ($this->config->get('veritrans_api_version') == 2)
     {
-
       $veritrans_notification = new VeritransNotification();
-      if ($veritrans_notification->status_code == 200)
+
+      // confirm back to the Veritrans server
+      $veritrans = new Veritrans();
+      $veritrans->server_key = $this->config->get('veritrans_server_key_v2');
+      $veritrans_confirmation = $veritrans->confirm($veritrans_notification->order_id);
+
+      if ($veritrans_notification->status_code == $veritrans_confirmation['status_code'])
       {
-      	$this->model_checkout_order->confirm($veritrans_notification->order_id, $this->config->get('veritrans_vtweb_success_mapping'), 'VT-Web payment successful.');  
-      } else if ($veritrans_notification->status_code == 201)
-      {
-      	$this->model_checkout_order->confirm($veritrans_notification->order_id, $this->config->get('veritrans_vtweb_challenge_mapping'), 'VT-Web payment challenged. Please take action on your Merchant Administration Portal.');  
-      } else if ($veritrans_notification->status_code == 202)
-      {
-      	$this->model_checkout_order->confirm($veritrans_notification->order_id, $this->config->get('veritrans_vtweb_failure_mapping'), 'VT-Web payment failed.');  
+      	if ($veritrans_notification->status_code == 200)
+	      {
+	      	$this->model_checkout_order->confirm($veritrans_notification->order_id, $this->config->get('veritrans_vtweb_success_mapping'), 'VT-Web payment successful.');  
+	      } else if ($veritrans_notification->status_code == 201)
+	      {
+	      	$this->model_checkout_order->confirm($veritrans_notification->order_id, $this->config->get('veritrans_vtweb_challenge_mapping'), 'VT-Web payment challenged. Please take action on your Merchant Administration Portal.');  
+	      } else if ($veritrans_notification->status_code == 202)
+	      {
+	      	$this->model_checkout_order->confirm($veritrans_notification->order_id, $this->config->get('veritrans_vtweb_failure_mapping'), 'VT-Web payment failed.');  
+	      }
       }
 
     } else
