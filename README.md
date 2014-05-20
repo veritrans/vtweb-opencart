@@ -15,7 +15,7 @@ This is the official Veritrans plug-in for the Opencart e-commerce platform.
 
 4. Import the `token.sql` file into your _Opencart_ shop database.
 
-6. In your _Opencart_ admin area, enable the Veritrans plug-in and insert your merchant details (Merchant ID and Merchant Hash Key)
+6. In your _Opencart_ admin area, enable the Veritrans plug-in and insert your merchant details (Merchant ID and Merchant Hash Key for v1 OR Server_key for v2)
 
 7. Login into your Veritrans account and change the following options: 
    
