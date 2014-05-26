@@ -135,7 +135,7 @@
           </tr>
           <!-- Server Key (v2-specific) -->
 
-          <tr>
+          <tr id="veritransPaymentTypeContainer">
             <td><span class="required">*</span> <?php echo $entry_payment_type; ?></td>
             <td>
               <?php $options = array('vtweb' => 'VT-Web', 'vtdirect' => 'VT-Direct'); ?>
@@ -167,7 +167,9 @@
 
           <tr class="v1_settings v2_vtweb_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_3d_secure; ?></td>
-            <td><input type="checkbox" name="veritrans_3d_secure" <?php if ($veritrans_3d_secure) echo 'checked'; ?> />
+            <td>
+              <input type="checkbox" name="veritrans_3d_secure" <?php if ($veritrans_3d_secure) echo 'checked'; ?> />
+              <span>Please contact us if you wish to activate this feature in the Production environment.</span>
             </td>
           </tr>
           <!-- 3D Secure -->
@@ -239,6 +241,15 @@
       $('.' + api_string).show();
       $('.' + payment_type_string).show();
       $('.' + api_payment_type_string).show();
+
+      // temporarily hide vt-direct if the API version is 2
+      if (api_version == 2)
+      {
+        $('#veritransPaymentTypeContainer').hide();
+      } else{
+        $('#veritransPaymentTypeContainer').show();
+      }
+      
     }
 
     $("#veritransApiVersion").on('change', function(e, data) {
