@@ -148,6 +148,10 @@ class ControllerPaymentVeritrans extends Controller {
 		if (!in_array($version, array(1, 2)))
 			$version = 1;
 
+		// temporarily always set the payment type to vtweb if the api_version == 2
+		if ($version == 2)
+			$this->request->post['veritrans_payment_type'] = 'vtweb';
+
 		$payment_type = $this->request->post['veritrans_payment_type'];
 		if (!in_array($payment_type, array('vtweb', 'vtdirect')))
 			$payment_type = 'vtweb';
@@ -160,7 +164,7 @@ class ControllerPaymentVeritrans extends Controller {
 		if (!$this->request->post['veritrans_display_name']) {
 			$this->error['display_name'] = $this->language->get('error_display_name');
 		}
-		
+
 		// version-specific validation
 		if ($version == 1)
 		{
