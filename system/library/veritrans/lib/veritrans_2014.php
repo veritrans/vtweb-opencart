@@ -55,7 +55,8 @@ class Veritrans2014 {
 
       // convert the result into an associative array
       return json_decode($result, true);  
-    } catch {
+
+    } catch (Exception $e) {
       trigger_error(sprintf(
         'Curl failed with error #%d: %s',
         $e->getCode(), $e->getMessage()),
