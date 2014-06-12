@@ -47,7 +47,11 @@ class Sanitizer {
   {
     array_push($this->order, function($string) {
       $isoCountry = new \ISOCountry();
-      if (array_key_exists(strtoupper($string), $isoCountry->isoA3))
+      if (in_array($string, array_values($isoCountry->isoA3)))
+      {
+        return $string;
+      }
+      else if (array_key_exists(strtoupper($string), $isoCountry->isoA3))
       {
         return $isoCountry->isoA3[strtoupper($string)];
       } else
