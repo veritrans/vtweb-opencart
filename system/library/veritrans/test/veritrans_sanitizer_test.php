@@ -1,5 +1,7 @@
 <?php 
 
+require_once(dirname(__FILE__) . '/../lib/veritrans_sanitizer.php');
+
 class VeritransSanitizerTest extends PHPUnit_Framework_TestCase
 {
   public function testLengthSanitizer()
@@ -33,6 +35,10 @@ class VeritransSanitizerTest extends PHPUnit_Framework_TestCase
     $string = 'US';
     $sanitized_string = \Veritrans\Sanitizer::create($string)->to_iso_3166_1_alpha_3()->run();
     $this->assertEquals('USA', $sanitized_string); 
+
+    $string = 'UKR';
+    $sanitized_string = \Veritrans\Sanitizer::create($string)->to_iso_3166_1_alpha_3()->run();
+    $this->assertEquals('UKR', $sanitized_string); 
 
     $string = 'some_random_string';
     $sanitized_string = \Veritrans\Sanitizer::create($string)->to_iso_3166_1_alpha_3()->run();
