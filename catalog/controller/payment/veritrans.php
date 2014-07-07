@@ -21,7 +21,6 @@ class ControllerPaymentVeritrans extends Controller {
   }
 
   public function process_order() {
-
     $this->load->model('payment/veritrans');
     $this->load->model('checkout/order');
     $this->load->model('total/shipping');
@@ -187,6 +186,19 @@ class ControllerPaymentVeritrans extends Controller {
     //
     else {
       try {
+        $enabled_payments = array();
+        if ($this->config->has('veritrans_enabled_payments')) {
+          foreach ($this->config->get('veritrans_enabled_payments')
+              as $key => $value) {
+            $enabled_payments[] = $key;
+          }
+        }
+        if (empty($enabled_payments)) {
+          $enabled_payments[] = 'credit_card';
+        }
+
+        $payloads['vtweb']['enabled_payments'] = $enabled_payments;
+
         $redirUrl = Veritrans_VtWeb::getRedirectionUrl($payloads);
         $this->cart->clear();
         $this->redirect($redirUrl);

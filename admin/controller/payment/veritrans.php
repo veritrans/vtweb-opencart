@@ -113,7 +113,8 @@ class ControllerPaymentVeritrans extends Controller {
 			'veritrans_vtweb_success_mapping',
 			'veritrans_vtweb_failure_mapping',
 			'veritrans_vtweb_challenge_mapping',
-			'veritrans_display_name'
+			'veritrans_display_name',
+			'veritrans_enabled_payments'
 			);
 
 		foreach ($inputs as $input) {
@@ -142,9 +143,6 @@ class ControllerPaymentVeritrans extends Controller {
 	}
 
 	protected function validate() {
-
-		// default values
-		$version = $this->request->post['veritrans_api_version'];
 
 		// Override version to v2
 		$version = 2;

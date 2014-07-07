@@ -95,6 +95,31 @@
           </tr>
           <!-- Payment Type -->
 
+          <tr class="v2_settings sensitive">
+            <td><span class="required">*</span> Enabled Payments</td>
+            <td>
+              <?php
+                $payment_types = array(
+                    'credit_card' => 'Credit Card',
+                    'cimb_clicks' => 'CIMB Clicks',
+                    'mandiri_clickpay' => 'Mandiri ClickPay'
+                  );
+              ?>
+
+              <?php foreach ($payment_types as $key => $val): ?>
+                <?php $isChecked = isset($veritrans_enabled_payments)
+                    && array_key_exists($key, $veritrans_enabled_payments)
+                    && $veritrans_enabled_payments[$key];
+                ?>
+                <input type="checkbox"
+                    value="1"
+                    name="veritrans_enabled_payments[<?php echo $key; ?>]"
+                    <?php if ($isChecked) echo 'checked'; ?>>
+                <?php echo $val; ?>
+              <?php endforeach ?>
+            </td>
+          </tr>
+
           <tr class="v1_settings v2_vtweb_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_3d_secure; ?></td>
             <td>
