@@ -5,7 +5,7 @@ $_['heading_title']      = 'Veritrans';
 // Text
 $_['text_payment']       = 'Payment';
 $_['text_success']       = 'Success: You have modified Veritrans account details!';
-$_['text_veritrans']     = '<a href="https://payments.veritrans.co.id/web1/paymentSelect.action" target="_blank"><img src="view/image/payment/veritrans.jpg" width="120px" alt="Veritrans" title="Veritrans" style="border: 1px solid #EEEEEE;" /></a>';
+$_['text_veritrans']     = '<a href="https://payments.veritrans.co.id/web1/paymentSelect.action" target="_blank"><img src="view/image/payment/veritrans.png" width="120px" alt="Veritrans" title="Veritrans" style="border: 1px solid #EEEEEE;" /></a>';
 $_['text_live']          = 'Production';
 $_['text_successful']    = 'Always Successful';
 $_['text_fail']          = 'Always Fail';
