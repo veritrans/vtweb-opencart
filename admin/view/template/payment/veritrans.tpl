@@ -6,7 +6,7 @@
     <?php } ?>
   </div>
   <!-- breadcrumb -->
-  
+
   <?php if (isset($error['warning'])): ?>
     <div class="warning"><?php echo $error['warning']; ?></div>
   <?php endif; ?>
@@ -46,26 +46,13 @@
           </tr>
           <!-- Display name -->
 
-          <tr>
-            <td><span class="required">*</span> <?php echo $entry_api_version; ?></td>
-            <td>
-              <?php $options = array('1' => 'v1', '2' => 'v2'); ?>
-              <select name="veritrans_api_version" id="veritransApiVersion">
-                <?php foreach ($options as $key => $value): ?>
-                  <option value="<?php echo $key ?>" <?php if ($key == $veritrans_api_version) echo 'selected' ?> ><?php echo $value ?></option>
-                <?php endforeach ?>
-              </select>
-            </td>
-          </tr>
-          <!-- API Version -->
-
           <tr class="v2_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_environment; ?></td>
             <td>
               <select name="veritrans_environment">
                 <?php $options = array('development' => 'Sandbox', 'production' => 'Production') ?>
                 <?php foreach ($options as $key => $value): ?>
-                  <option value="<?php echo $key ?>" <?php if ($key == $veritrans_environment) echo 'selected' ?> ><?php echo $value ?></option>  
+                  <option value="<?php echo $key ?>" <?php if ($key == $veritrans_environment) echo 'selected' ?> ><?php echo $value ?></option>
                 <?php endforeach ?>
               </select>
               <?php if (isset($error['environment'])): ?>
@@ -74,46 +61,6 @@
             </td>
           </tr>
           <!-- Environment (v2-specific) -->
-
-          <tr class="v1_vtweb_settings sensitive">
-            <td><span class="required">*</span> <?php echo $entry_merchant; ?></td>
-            <td><input type="text" name="veritrans_merchant" value="<?php echo $veritrans_merchant; ?>" />
-              <?php if (isset($error['merchant'])): ?>
-                <span class="error"><?php echo $error['merchant']; ?></span>
-              <?php endif; ?>
-            </td>
-          </tr>
-          <!-- Merchant ID (v1-specific) -->
-
-          <tr class="v1_vtweb_settings sensitive">
-            <td><span class="required">*</span> <?php echo $entry_hash; ?></td>
-            <td><input type="text" name="veritrans_hash" value="<?php echo $veritrans_hash; ?>" />
-              <?php if (isset($error['hash'])): ?>
-                <span class="error"><?php echo $error['hash']; ?></span>
-              <?php endif; ?>
-            </td>
-          </tr>
-          <!-- Merchant Hash Key (v1-specific) -->
-
-          <tr class="v1_vtdirect_settings sensitive">
-            <td><span class="required">*</span> <?php echo $entry_client_key_v1; ?></td>
-            <td><input type="text" name="veritrans_client_key_v1" value="<?php echo $veritrans_client_key_v1; ?>" />
-              <?php if (isset($error['client_key_v1'])): ?>
-                <span class="error"><?php echo $error['client_key_v1']; ?></span>
-              <?php endif; ?>
-            </td>
-          </tr>
-          <!-- VT-Direct Client Key (v1-specific) -->
-
-          <tr class="v1_vtdirect_settings sensitive">
-            <td><span class="required">*</span> <?php echo $entry_server_key_v1; ?></td>
-            <td><input type="text" name="veritrans_server_key_v1" value="<?php echo $veritrans_server_key_v1; ?>" />
-              <?php if (isset($error['server_key_v1'])): ?>
-                <span class="error"><?php echo $error['server_key_v1']; ?></span>
-              <?php endif; ?>
-            </td>
-          </tr>
-          <!-- VT-Direct Server Key (v1-specific) -->
 
           <tr class="v2_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_client_key; ?></td>
@@ -124,7 +71,7 @@
             </td>
           </tr>
           <!-- Client Key (v2-specific) -->
-          
+
           <tr class="v2_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_server_key; ?></td>
             <td><input type="text" name="veritrans_server_key_v2" value="<?php echo $veritrans_server_key_v2; ?>" />
@@ -148,23 +95,6 @@
           </tr>
           <!-- Payment Type -->
 
-          <?php $banks = array('bni' => 'BNI', 'cimb' => 'CIMB', 'mandiri' => 'Mandiri') ?>
-          <?php foreach ($banks as $bank_key => $bank_value): ?>
-            <tr class="v1_vtweb_settings sensitive">
-              <td>
-                <?php echo preg_replace('/BANK/', $bank_value, $entry_enable_bank_installment); ?>
-              </td>
-              <td>
-                <?php $installment_terms = array(3, 6, 9, 12, 18, 24); ?>
-                <?php foreach ($installment_terms as $installment_term): ?>
-                  <input type="checkbox" name="veritrans_installment_terms[<?php echo $bank_key ?>][<?php echo $installment_term ?>]" <?php if ($veritrans_installment_terms && array_key_exists($bank_key, $veritrans_installment_terms) && array_key_exists($installment_term, $veritrans_installment_terms[$bank_key]) && $veritrans_installment_terms[$bank_key][$installment_term]) echo 'checked'; ?> /> <?php echo $installment_term ?>
-                <?php endforeach ?>
-              </td>
-            </tr>  
-          <?php endforeach ?>
-          
-          <!-- Installment -->
-
           <tr class="v1_settings v2_vtweb_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_3d_secure; ?></td>
             <td>
@@ -185,7 +115,7 @@
                 </select>
               </td>
             </tr>
-            
+
           <?php endforeach ?>
           <!-- VTWeb Mapping -->
 
@@ -232,7 +162,7 @@
 <script>
   $(function() {
     function sensitiveOptions() {
-      var api_version = $('#veritransApiVersion').val();
+      var api_version = 2;
       var payment_type = $('#veritransPaymentType').val();
       var api_string = 'v' + api_version + '_settings';
       var payment_type_string = payment_type;
@@ -249,7 +179,7 @@
       } else{
         $('#veritransPaymentTypeContainer').show();
       }
-      
+
     }
 
     $("#veritransApiVersion").on('change', function(e, data) {
@@ -260,7 +190,7 @@
     });
 
     sensitiveOptions();
-    
+
 
   });
 </script>

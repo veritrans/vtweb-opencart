@@ -1,6 +1,6 @@
 <?php
 class ControllerPaymentVeritrans extends Controller {
-	
+
 	private $error = array();
 
 	public function index() {
@@ -20,7 +20,7 @@ class ControllerPaymentVeritrans extends Controller {
 		}
 
 		$language_entries = array(
-			
+
 			'heading_title',
 			'text_enabled',
 			'text_disabled',
@@ -121,7 +121,7 @@ class ControllerPaymentVeritrans extends Controller {
 				$this->data[$input] = $this->request->post[$input];
 			} else {
 				$this->data[$input] = $this->config->get($input);
-			}	
+			}
 		}
 
 		$this->load->model('localisation/order_status');
@@ -145,8 +145,9 @@ class ControllerPaymentVeritrans extends Controller {
 
 		// default values
 		$version = $this->request->post['veritrans_api_version'];
-		if (!in_array($version, array(1, 2)))
-			$version = 1;
+
+		// Override version to v2
+		$version = 2;
 
 		// temporarily always set the payment type to vtweb if the api_version == 2
 		if ($version == 2)
@@ -186,7 +187,7 @@ class ControllerPaymentVeritrans extends Controller {
 
 				if (!$this->request->post['veritrans_server_key_v1']) {
 					$this->error['server_key_v1'] = $this->language->get('error_server_key');
-				}	
+				}
 			}
 		} else if ($version == 2)
 		{
