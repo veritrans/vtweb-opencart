@@ -273,6 +273,14 @@ class ControllerPaymentVeritrans extends Controller {
             $this->config->get('veritrans_vtweb_failure_mapping'),
             'VT-Web payment failed.');
       }
+      else {
+        $logs .= "*$transaction:$fraud ";
+        $this->model_checkout_order->confirm(
+            $notif->order_id,
+            $this->config->get('veritrans_vtweb_challenge_mapping'),
+            'VT-Web payment challenged. Please take action on '
+              . 'your Merchant Administration Portal.');
+      }
 
       error_log($logs);
     }
