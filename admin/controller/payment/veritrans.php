@@ -114,7 +114,8 @@ class ControllerPaymentVeritrans extends Controller {
 			'veritrans_vtweb_failure_mapping',
 			'veritrans_vtweb_challenge_mapping',
 			'veritrans_display_name',
-			'veritrans_enabled_payments'
+			'veritrans_enabled_payments',
+			'veritrans_sanitization'
 			);
 
 		foreach ($inputs as $input) {

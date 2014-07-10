@@ -96,7 +96,15 @@
           <!-- Payment Type -->
 
           <tr class="v2_settings sensitive">
-            <td><span class="required">*</span> Enabled Payments</td>
+            <td><span class="required">* </span>Enable Sanitization?</td>
+            <td>
+              <input type="checkbox" name="veritrans_sanitization" value="on" <?php if ($veritrans_sanitization) echo 'checked'; ?>>
+            </td>
+          </tr>
+          <!-- Sanitization -->
+
+          <tr class="v2_settings sensitive">
+            <td><span class="required">* </span>Enabled Payments</td>
             <td>
               <?php
                 $payment_types = array(
@@ -112,13 +120,14 @@
                     && $veritrans_enabled_payments[$key];
                 ?>
                 <input type="checkbox"
-                    value="1"
+                    value="on"
                     name="veritrans_enabled_payments[<?php echo $key; ?>]"
                     <?php if ($isChecked) echo 'checked'; ?>>
                 <?php echo $val; ?>
               <?php endforeach ?>
             </td>
           </tr>
+          <!-- Enabled Payments -->
 
           <tr class="v1_settings v2_vtweb_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_3d_secure; ?></td>

@@ -142,22 +142,19 @@ class ControllerPaymentVeritrans extends Controller {
       }
     }
 
-    if ($this->config->get('veritrans_environment') == 'production') {
-      Veritrans_Config::$isProduction = true;
-    }
-    else {
-      Veritrans_Config::$isProduction = false;
-    }
-
     Veritrans_Config::$serverKey = $this->config->
         get('veritrans_server_key_v2');
 
-    if ($this->config->get('veritrans_3d_secure') == 'on') {
-      Veritrans_Config::$is3ds = true;
-    }
-    else {
-      Veritrans_Config::$is3ds = false;
-    }
+    Veritrans_Config::$isProduction =
+        $this->config->get('veritrans_environment') == 'production'
+        ? true : false;
+
+    Veritrans_Config::$is3ds = $this->config->get('veritrans_3d_secure') == 'on'
+        ? true : false;
+
+    Veritrans_Config::$isSanitized =
+        $this->config->get('veritrans_sanitization') == 'on'
+        ? true : false;
 
     // TODO
     // // Installment terms
