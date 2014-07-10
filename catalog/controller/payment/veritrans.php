@@ -83,7 +83,7 @@ class ControllerPaymentVeritrans extends Controller {
           'id'       => $product['product_id'],
           'price'    => $product['price'],
           'quantity' => $product['quantity'],
-          'name'     => substr($product['name'], 0, 17) . '...'
+          'name'     => $product['name']
         );
       $item_details[] = $item;
     }
