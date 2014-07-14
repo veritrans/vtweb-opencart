@@ -156,53 +156,31 @@ class ControllerPaymentVeritrans extends Controller {
         $this->config->get('veritrans_sanitization') == 'on'
         ? true : false;
 
-    // TODO
-    // // Installment terms
-    // if ($this->config->get('veritrans_installment_terms'))
-    // {
-    //   $installment_config = $this->config->get('veritrans_installment_terms');
-    //   $veritrans->installment_banks = array_keys($installment_config);
-    //   $installment_terms = array();
-    //   foreach ($installment_config as $key => $value) {
-    //     $installment_terms[$key] = array_keys($value);
-    //   }
-    //   $veritrans->installment_terms = $installment_terms;
-    // }
-
-    // enable smart sanitization
-    // $veritrans->force_sanitization = TRUE;
-
     $payloads = array();
     $payloads['transaction_details'] = $transaction_details;
     $payloads['item_details']        = $item_details;
     $payloads['customer_details']    = $customer_details;
 
-    if ($this->config->get('veritrans_payment_type') == 'vtdirect') {
-      // TODO
+    try {
+      $enabled_payments = array();
+      if ($this->config->has('veritrans_enabled_payments')) {
+        foreach ($this->config->get('veritrans_enabled_payments')
+            as $key => $value) {
+          $enabled_payments[] = $key;
+        }
+      }
+      if (empty($enabled_payments)) {
+        $enabled_payments[] = 'credit_card';
+      }
+
+      $payloads['vtweb']['enabled_payments'] = $enabled_payments;
+
+      $redirUrl = Veritrans_VtWeb::getRedirectionUrl($payloads);
+      $this->cart->clear();
+      $this->redirect($redirUrl);
     }
-    //
-    else {
-      try {
-        $enabled_payments = array();
-        if ($this->config->has('veritrans_enabled_payments')) {
-          foreach ($this->config->get('veritrans_enabled_payments')
-              as $key => $value) {
-            $enabled_payments[] = $key;
-          }
-        }
-        if (empty($enabled_payments)) {
-          $enabled_payments[] = 'credit_card';
-        }
-
-        $payloads['vtweb']['enabled_payments'] = $enabled_payments;
-
-        $redirUrl = Veritrans_VtWeb::getRedirectionUrl($payloads);
-        $this->cart->clear();
-        $this->redirect($redirUrl);
-      }
-      catch (Exception $e) {
-        $this->data['errors'][] = $e->getMessage();
-      }
+    catch (Exception $e) {
+      $this->data['errors'][] = $e->getMessage();
     }
   }
 
