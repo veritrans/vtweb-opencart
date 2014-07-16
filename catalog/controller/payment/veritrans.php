@@ -118,6 +118,7 @@ class ControllerPaymentVeritrans extends Controller {
               'IDR'
             ));
         }
+        unset($item);
 
         $transaction_details['gross_amount'] = intval($this->currency->convert(
             $transaction_details['gross_amount'],
@@ -130,6 +131,7 @@ class ControllerPaymentVeritrans extends Controller {
           $item['price'] = intval($item['price']
               * $this->config->get('veritrans_currency_conversion'));
         }
+        unset($item);
 
         $transaction_details['gross_amount'] = intval(
             $transaction_details['gross_amount']
@@ -140,6 +142,21 @@ class ControllerPaymentVeritrans extends Controller {
             . "the Veritrans currency conversion rate is valid. "
             . "Please review your currency setting.";
       }
+    }
+
+    $total_price = 0;
+    foreach ($item_details as $item) {
+      $total_price += $item['price'];
+    }
+
+    if ($total_price != $transaction_details['gross_amount']) {
+      $coupon_item = array(
+          'id'       => 'COUPON',
+          'price'    => $transaction_details['gross_amount'] - $total_price,
+          'quantity' => 1,
+          'name'     => 'COUPON'
+        );
+      $item_details[] = $coupon_item;
     }
 
     Veritrans_Config::$serverKey = $this->config->
