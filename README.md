@@ -11,17 +11,17 @@ This is the official Veritrans extension for the OpenCart E-commerce platform.
 
 2. Locate the root _OpenCart_ directory of your shop via FTP connection.
 
-3. Copy the `admin`, `catalog`, `image` and `system` folders into your _OpenCart's_ root folder.
+3. Copy the `admin`, `catalog`, and `system` folders into your _OpenCart's_ root folder.
 
 5. In your _OpenCart_ admin area, enable the Veritrans plug-in and insert your merchant details (server key and client key).
 
-6. Login into your Veritrans account and change the following options: 
-   
+6. Login into your Veritrans account and change the following options:
+
   * **Payment Notification URL** in Settings to `http://[your shop's homepage]/index.php?route=payment/veritrans/payment_notification`
 
-  * **Finish Redirect URL** in Settings to `http://[your shop's homepage]/index.php?route=checkout/success&`
+  * **Finish Redirect URL** in Settings to `http://[your shop's homepage]/index.php?route=checkout/success`
 
-  * **Error Redirect URL** in Settings to `http://[your shop's homepage]/index.php?route=checkout/failure&`
+  * **Error Redirect URL** in Settings to `http://[your shop's homepage]/`
 
   * **Unfinish Redirect URL** in Settings to `http://[your shop's homepage]/index.php`
 
