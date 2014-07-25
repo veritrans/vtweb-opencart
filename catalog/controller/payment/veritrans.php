@@ -20,6 +20,10 @@ class ControllerPaymentVeritrans extends Controller {
     $this->render();
   }
 
+  /**
+   * Called when a customer checkouts.
+   * If it runs successfully, it will redirect to VT-Web payment page.
+   */
   public function process_order() {
     $this->load->model('payment/veritrans');
     $this->load->model('checkout/order');
@@ -138,7 +142,7 @@ class ControllerPaymentVeritrans extends Controller {
             * $this->config->get('veritrans_currency_conversion'));
       }
       else {
-        $this->data['errors'][] = "Neither the IDR currency is installed or "
+        $this->data['errors'][] = "Either the IDR currency is not installed or "
             . "the Veritrans currency conversion rate is valid. "
             . "Please review your currency setting.";
       }
@@ -201,6 +205,11 @@ class ControllerPaymentVeritrans extends Controller {
     }
   }
 
+  /**
+   * Called when Veritrans server sends notification to this server.
+   * It will change order status according to transaction status and fraud
+   * status sent by Veritrans server.
+   */
   public function payment_notification() {
     error_log('payment notification');
 
