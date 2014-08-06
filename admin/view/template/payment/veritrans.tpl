@@ -138,6 +138,60 @@
           </tr>
           <!-- 3D Secure -->
 
+          <tr class="v2_settings sensitive">
+            <td><span class="required">*</span> Enable Installment</td>
+            <td>
+              <select name="veritrans_installment_option" id="installmentOption">
+                <?php $options = array('all_product' => 'All Products', 'certain_product' => 'Certain Product', 'off' => 'Off') ?>
+                <?php foreach ($options as $key => $value): ?>
+                  <option value="<?php echo $key ?>" <?php if ($key == $veritrans_installment_option) echo 'selected' ?> ><?php echo $value ?></option>
+                <?php endforeach ?>
+              </select>              
+            </td>
+          </tr>
+          <!-- Select Installment Option (v2-specific) -->
+
+          <tr class="all_product certain_product installment">
+            <td><span class="required">* </span>Installment Bank</td>
+            <td>
+              <?php
+                $installment_banks = array(
+                    'bni' => 'BNI',
+                    'mandiri' => 'MANDIRI'                    
+                  );
+              ?>
+
+              <?php foreach ($installment_banks as $key => $val): ?>
+                <?php $isChecked = (isset($veritrans_installment_banks) && array_key_exists($key, $veritrans_installment_banks)&& $veritrans_installment_banks[$key]);
+                ?>
+                <input type="checkbox"
+                    value="<?php echo $key; ?>"
+                    class="installmentBank"
+                    name="veritrans_installment_banks[<?php echo $key; ?>]"
+                    <?php if ($isChecked) echo 'checked'; ?>>
+                <?php echo $val; ?>
+              <?php endforeach ?>
+            </td>
+          </tr>
+          <!-- Select Bank Installment -->          
+          
+          <?php foreach (array('bni' => 'BNI', 'mandiri' => 'MANDIRI') as $name_bank => $display_bank): ?>              
+              <tr class="installment all_product_<?php echo $name_bank; ?>">
+                <td><span class="required">* </span><?php echo $display_bank; ?> Term</td>
+                <td>                  
+                  <?php foreach (array(3, 6, 9, 12, 18, 24) as $term): ?>
+                    <?php $isChecked = isset(${"veritrans_installment_".$name_bank."_term"}) && array_key_exists($term, ${"veritrans_installment_".$name_bank."_term"})&& ${"veritrans_installment_".$name_bank."_term"}[$term];
+                    ?>
+                    <input type="checkbox"
+                        value="on"
+                        name="veritrans_installment_<?php echo $name_bank; ?>_term[<?php echo $term; ?>]"
+                        <?php if ($isChecked) echo 'checked'; ?>>
+                    <?php echo $term; ?> &nbsp;                    
+                  <?php endforeach ?>
+                </td>
+              </tr>
+          <?php endforeach?>
+          <!-- installment bank Term-->
           <?php foreach (array('vtweb_success_mapping', 'vtweb_failure_mapping', 'vtweb_challenge_mapping') as $status): ?>
             <tr class="">
               <td><span class="required">*</span> <?php echo ${'entry_' . $status} ?></td>
@@ -216,15 +270,41 @@
 
     }
 
+    function setupVisibility(){
+      $('.installment').hide();
+      var installmentOption = $("#installmentOption").val();
+      var bankInstallment = [];
+      $('.installmentBank:checked').each(function(){
+          bankInstallment.push($(this).val());
+      });
+            
+      $('.'+installmentOption).show();
+      if (installmentOption == 'all_product'){
+        $.each(bankInstallment, function(index,value){
+          $('.'+installmentOption+'_'+value).show();
+        });
+        
+      }
+    }
+
     $("#veritransApiVersion").on('change', function(e, data) {
       sensitiveOptions();
     });
+    
     $("#veritransPaymentType").on('change', function(e, data) {
       sensitiveOptions();
     });
 
-    sensitiveOptions();
+    $("#installmentOption").on('change', function(e, data) {
+      setupVisibility();
+    });
 
+    $(".installmentBank").click(function(){
+           setupVisibility();
+        });
+
+    sensitiveOptions();
+    setupVisibility();
 
   });
 </script>
