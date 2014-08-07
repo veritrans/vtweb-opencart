@@ -73,6 +73,7 @@ class ControllerPaymentVeritrans extends Controller {
 
     $products = $this->cart->getProducts();
     $item_details = array();
+
     foreach ($products as $product) {
       if (($this->config->get('config_customer_price')
             && $this->customer->isLogged())
@@ -91,6 +92,10 @@ class ControllerPaymentVeritrans extends Controller {
         );
       $item_details[] = $item;
     }
+
+    unset($product);
+
+    $num_products = count($item_details);
 
     if ($this->cart->hasShipping()) {
       $shipping_info = $this->session->data['shipping_method'];
@@ -150,7 +155,7 @@ class ControllerPaymentVeritrans extends Controller {
 
     $total_price = 0;
     foreach ($item_details as $item) {
-      $total_price += $item['price'];
+      $total_price += $item['price'] * $item['quantity'];
     }
 
     if ($total_price != $transaction_details['gross_amount']) {
@@ -195,13 +200,91 @@ class ControllerPaymentVeritrans extends Controller {
       }
 
       $payloads['vtweb']['enabled_payments'] = $enabled_payments;
+      $is_installment = false;
+
+      if ($this->config->get('veritrans_installment_option') == 'all_product') {
+        $payment_options = array(
+          'installment' => array(
+            'required' => false
+          )
+        );
+
+        if ($this->config->has('veritrans_installment_banks')) {
+          $installment_terms = array();
+
+          foreach ($this->config->get('veritrans_installment_banks')
+              as $key => $value) {
+            $terms = array();
+
+            foreach ($this->config->get('veritrans_installment_' . $key . '_term')
+                as $month => $val_month) {
+              $terms[] = $month;
+            }
+
+            $installment_terms[$key] = $terms;
+          }
+
+          $payment_options['installment']['installment_terms'] = $installment_terms;
+        }
+
+        $payloads['vtweb']['payment_options'] = $payment_options;
+      }
+      else if ($this->config->get('veritrans_installment_option') == 'certain_product') {
+        $payment_options = array(
+          'installment' => array(
+            'required' => true
+          )
+        );
+
+        $installment_terms = array();
+
+        foreach ($products as $product) {
+          $options = $product['option'];
+
+          foreach ($options as $option) {
+            if ($option['name'] == 'Payment') {
+              $installment_value = explode(' ', $option['option_value']);
+
+              if (strtolower($installment_value[0]) == 'installment') {
+                $is_installment = true;
+                $installment_terms[strtolower($installment_value[1])]
+                  = array($installment_value[2]);
+              }
+            }
+          }
+        }
+
+        if ($is_installment && ($num_products == 1)
+            && ($transaction_details['gross_amount'] >= 500000)) {
+          $payment_options['installment']['installment_terms'] = $installment_terms;
+          $payloads['vtweb']['payment_options'] = $payment_options;
+        }
+      }
 
       $redirUrl = Veritrans_VtWeb::getRedirectionUrl($payloads);
+      error_log('total harga ' . $order_info['total']);
+      if ($is_installment) {
+        $warningUrl = 'index.php?route=information/warning&redirLink=';
+
+        if ($num_products > 1) {
+          $redirUrl = $warningUrl . $redirUrl . '&message=1';
+        }
+        else if ($transaction_details['gross_amount'] < 500000) {
+          $redirUrl = $warningUrl . $redirUrl . '&message=2';
+        }
+      }
+      else if ($this->config->get('veritrans_installment_option') == 'all_product' &&
+          ($transaction_details['gross_amount'] < 500000)) {
+        $warningUrl = 'index.php?route=information/warning&redirLink=';
+        $redirUrl = $warningUrl . $redirUrl . '&message=2';
+      }
+
       $this->cart->clear();
       $this->redirect($redirUrl);
     }
     catch (Exception $e) {
       $this->data['errors'][] = $e->getMessage();
+      error_log($e->getMessage());
     }
   }
 
