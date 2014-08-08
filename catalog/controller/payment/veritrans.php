@@ -262,7 +262,7 @@ class ControllerPaymentVeritrans extends Controller {
       }
 
       $redirUrl = Veritrans_VtWeb::getRedirectionUrl($payloads);
-      error_log('total harga ' . $order_info['total']);
+      
       if ($is_installment) {
         $warningUrl = 'index.php?route=information/warning&redirLink=';
 
