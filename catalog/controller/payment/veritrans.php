@@ -37,6 +37,9 @@ class ControllerPaymentVeritrans extends Controller {
     $order_info = $this->model_checkout_order->getOrder(
         $this->session->data['order_id']);
 
+    $this->model_checkout_order->confirm($this->session->data['order_id'],
+        $this->config->get('veritrans_vtweb_challenge_mapping'));
+
     $transaction_details                 = array();
     $transaction_details['order_id']     = $this->session->data['order_id'];
     $transaction_details['gross_amount'] = $order_info['total'];
@@ -262,7 +265,7 @@ class ControllerPaymentVeritrans extends Controller {
       }
 
       $redirUrl = Veritrans_VtWeb::getRedirectionUrl($payloads);
-      error_log('total harga ' . $order_info['total']);
+      
       if ($is_installment) {
         $warningUrl = 'index.php?route=information/warning&redirLink=';
 
@@ -315,7 +318,7 @@ class ControllerPaymentVeritrans extends Controller {
         $logs .= 'capture ';
         if ($fraud == 'challenge') {
           $logs .= 'challenge ';
-          $this->model_checkout_order->confirm(
+          $this->model_checkout_order->update(
               $notif->order_id,
               $this->config->get('veritrans_vtweb_challenge_mapping'),
               'VT-Web payment challenged. Please take action on '
@@ -323,10 +326,6 @@ class ControllerPaymentVeritrans extends Controller {
         }
         else if ($fraud == 'accept') {
           $logs .= 'accept ';
-          $this->model_checkout_order->confirm(
-              $notif->order_id,
-              $this->config->get('veritrans_vtweb_success_mapping'),
-              'VT-Web payment successful.');
           $this->model_checkout_order->update(
               $notif->order_id,
               $this->config->get('veritrans_vtweb_success_mapping'),
@@ -352,14 +351,14 @@ class ControllerPaymentVeritrans extends Controller {
       }
       else if ($transaction == 'deny') {
         $logs .= 'deny ';
-        $this->model_checkout_order->confirm(
+        $this->model_checkout_order->update(
             $notif->order_id,
             $this->config->get('veritrans_vtweb_failure_mapping'),
             'VT-Web payment failed.');
       }
       else {
         $logs .= "*$transaction:$fraud ";
-        $this->model_checkout_order->confirm(
+        $this->model_checkout_order->update(
             $notif->order_id,
             $this->config->get('veritrans_vtweb_challenge_mapping'),
             'VT-Web payment challenged. Please take action on '
