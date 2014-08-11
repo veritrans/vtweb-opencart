@@ -142,7 +142,7 @@
             <td><span class="required">*</span> Enable Installment</td>
             <td>
               <select name="veritrans_installment_option" id="installmentOption">
-                <?php $options = array('all_product' => 'All Products', 'certain_product' => 'Certain Product', 'off' => 'Off') ?>
+                <?php $options = array('off' => 'Off', 'all_product' => 'All Products', 'certain_product' => 'Certain Product') ?>
                 <?php foreach ($options as $key => $value): ?>
                   <option value="<?php echo $key ?>" <?php if ($key == $veritrans_installment_option) echo 'selected' ?> ><?php echo $value ?></option>
                 <?php endforeach ?>
@@ -179,7 +179,7 @@
               <tr class="installment all_product_<?php echo $name_bank; ?>">
                 <td><span class="required">* </span><?php echo $display_bank; ?> Term</td>
                 <td>                  
-                  <?php foreach (array(3, 6, 9, 12, 18, 24) as $term): ?>
+                  <?php foreach (array(3, 6, 12) as $term): ?>
                     <?php $isChecked = isset(${"veritrans_installment_".$name_bank."_term"}) && array_key_exists($term, ${"veritrans_installment_".$name_bank."_term"})&& ${"veritrans_installment_".$name_bank."_term"}[$term];
                     ?>
                     <input type="checkbox"
