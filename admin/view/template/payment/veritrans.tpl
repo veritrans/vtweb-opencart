@@ -133,7 +133,7 @@
             <td><span class="required">*</span> <?php echo $entry_3d_secure; ?></td>
             <td>
               <input type="checkbox" name="veritrans_3d_secure" <?php if ($veritrans_3d_secure) echo 'checked'; ?> />
-              <span>Please contact us if you wish to activate this feature in the Production environment.</span>
+              <span>You must enable 3D Secure. Please contact us if you wish to disable this feature in the Production environment.</span>
             </td>
           </tr>
           <!-- 3D Secure -->
