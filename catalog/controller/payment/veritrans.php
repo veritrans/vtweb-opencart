@@ -230,7 +230,9 @@ class ControllerPaymentVeritrans extends Controller {
           $payment_options['installment']['installment_terms'] = $installment_terms;
         }
 
-        $payloads['vtweb']['payment_options'] = $payment_options;
+        if ($transaction_details['gross_amount'] >= 500000) {
+          $payloads['vtweb']['payment_options'] = $payment_options;
+        }
       }
       else if ($this->config->get('veritrans_installment_option') == 'certain_product') {
         $payment_options = array(
