@@ -308,66 +308,62 @@ class ControllerPaymentVeritrans extends Controller {
         get('veritrans_server_key_v2');
     $notif = new Veritrans_Notification();
 
-    if ($notif->isVerified()) {
-      error_log('verified');
+    $transaction = $notif->transaction_status;
+    $fraud = $notif->fraud_status;
 
-      $transaction = $notif->transaction_status;
-      $fraud = $notif->fraud_status;
+    $logs = '';
 
-      $logs = '';
-
-      if ($transaction == 'capture') {
-        $logs .= 'capture ';
-        if ($fraud == 'challenge') {
-          $logs .= 'challenge ';
-          $this->model_checkout_order->update(
-              $notif->order_id,
-              $this->config->get('veritrans_vtweb_challenge_mapping'),
-              'VT-Web payment challenged. Please take action on '
-                . 'your Merchant Administration Portal.');
-        }
-        else if ($fraud == 'accept') {
-          $logs .= 'accept ';
-          $this->model_checkout_order->update(
-              $notif->order_id,
-              $this->config->get('veritrans_vtweb_success_mapping'),
-              'VT-Web payment successful.');
-        }
-      }
-      else if ($transaction == 'cancel') {
-        $logs .= 'cancel ';
-        if ($fraud == 'challenge') {
-          $logs .= 'challenge ';
-          $this->model_checkout_order->update(
-              $notif->order_id,
-              $this->config->get('veritrans_vtweb_failure_mapping'),
-              'VT-Web payment failed.');
-        }
-        else if ($fraud == 'accept') {
-          $logs .= 'accept ';
-          $this->model_checkout_order->update(
-              $notif->order_id,
-              $this->config->get('veritrans_vtweb_failure_mapping'),
-              'VT-Web payment failed.');
-        }
-      }
-      else if ($transaction == 'deny') {
-        $logs .= 'deny ';
-        $this->model_checkout_order->update(
-            $notif->order_id,
-            $this->config->get('veritrans_vtweb_failure_mapping'),
-            'VT-Web payment failed.');
-      }
-      else {
-        $logs .= "*$transaction:$fraud ";
+    if ($transaction == 'capture') {
+      $logs .= 'capture ';
+      if ($fraud == 'challenge') {
+        $logs .= 'challenge ';
         $this->model_checkout_order->update(
             $notif->order_id,
             $this->config->get('veritrans_vtweb_challenge_mapping'),
             'VT-Web payment challenged. Please take action on '
               . 'your Merchant Administration Portal.');
       }
-
-      error_log($logs);
+      else if ($fraud == 'accept') {
+        $logs .= 'accept ';
+        $this->model_checkout_order->update(
+            $notif->order_id,
+            $this->config->get('veritrans_vtweb_success_mapping'),
+            'VT-Web payment successful.');
+      }
     }
+    else if ($transaction == 'cancel') {
+      $logs .= 'cancel ';
+      if ($fraud == 'challenge') {
+        $logs .= 'challenge ';
+        $this->model_checkout_order->update(
+            $notif->order_id,
+            $this->config->get('veritrans_vtweb_failure_mapping'),
+            'VT-Web payment failed.');
+      }
+      else if ($fraud == 'accept') {
+        $logs .= 'accept ';
+        $this->model_checkout_order->update(
+            $notif->order_id,
+            $this->config->get('veritrans_vtweb_failure_mapping'),
+            'VT-Web payment failed.');
+      }
+    }
+    else if ($transaction == 'deny') {
+      $logs .= 'deny ';
+      $this->model_checkout_order->update(
+          $notif->order_id,
+          $this->config->get('veritrans_vtweb_failure_mapping'),
+          'VT-Web payment failed.');
+    }
+    else {
+      $logs .= "*$transaction:$fraud ";
+      $this->model_checkout_order->update(
+          $notif->order_id,
+          $this->config->get('veritrans_vtweb_challenge_mapping'),
+          'VT-Web payment challenged. Please take action on '
+            . 'your Merchant Administration Portal.');
+    }
+
+    error_log($logs);
   }
 }
