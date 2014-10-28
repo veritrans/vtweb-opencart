@@ -354,6 +354,20 @@ class ControllerPaymentVeritrans extends Controller {
           $notif->order_id,
           $this->config->get('veritrans_vtweb_failure_mapping'),
           'VT-Web payment failed.');
+    }    
+	else if ($transaction == 'pending') {
+      $logs .= 'pending ';
+      $this->model_checkout_order->update(
+          $notif->order_id,
+          $this->config->get('veritrans_vtweb_challenge_mapping'),
+          'VT-Web payment pending.');
+    }
+    else if ($transaction == 'settlement') {
+      $logs .= 'complete ';
+      $this->model_checkout_order->update(
+          $notif->order_id,
+          $this->config->get('veritrans_vtweb_success_mapping'),
+          'VT-Web payment successful.');
     }
     else {
       $logs .= "*$transaction:$fraud ";

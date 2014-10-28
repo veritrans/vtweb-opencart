@@ -110,7 +110,8 @@
                 $payment_types = array(
                     'credit_card' => 'Credit Card',
                     'cimb_clicks' => 'CIMB Clicks',
-                    'mandiri_clickpay' => 'Mandiri ClickPay'
+                    'mandiri_clickpay' => 'Mandiri ClickPay',
+                    'bank_transfer' => 'Permata VA'
                   );
               ?>
 
