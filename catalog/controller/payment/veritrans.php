@@ -369,6 +369,13 @@ class ControllerPaymentVeritrans extends Controller {
           $this->config->get('veritrans_vtweb_success_mapping'),
           'VT-Web payment successful.');
     }
+      else if ($transaction == 'cancel') {
+      $logs .= 'cancel ';
+      $this->model_checkout_order->update(
+          $notif->order_id,
+          $this->config->get('veritrans_vtweb_failure_mapping'),
+            'VT-Web payment failed.');
+    }
     else {
       $logs .= "*$transaction:$fraud ";
       $this->model_checkout_order->update(
