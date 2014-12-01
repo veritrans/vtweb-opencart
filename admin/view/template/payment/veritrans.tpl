@@ -111,7 +111,8 @@
                     'credit_card' => 'Credit Card',
                     'cimb_clicks' => 'CIMB Clicks',
                     'mandiri_clickpay' => 'Mandiri ClickPay',
-                    'bank_transfer' => 'Permata VA'
+                    'bank_transfer' => 'Permata VA',
+                    'bri_epay' => 'bri-epay'
                   );
               ?>
 
