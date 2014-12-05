@@ -209,17 +209,17 @@
           <?php endforeach ?>
           <!-- VTWeb Mapping -->
 
-          <?php if (!$this->currency->has('IDR')): ?>
             <tr>
               <td><span class="required">*</span> <?php echo $entry_currency_conversion; ?></td>
               <td>
                 <input type="text" name="veritrans_currency_conversion" value="<?php echo $veritrans_currency_conversion ?>" />
+                <span>Set to 1 if your default currency is IDR</span>
                 <?php if (isset($error['currency_conversion'])): ?>
                   <span class="error"><?php echo $error['currency_conversion']; ?></span>
                 <?php endif; ?>
               </td>
             </tr>
-          <?php endif ?>
+          
           <!-- Currency -->
 
           <tr>
