@@ -25,3 +25,11 @@ This is the official Veritrans extension for the OpenCart E-commerce platform.
 
   * **Unfinish Redirect URL** in Settings to `http://[your shop's homepage]/index.php`
 
+#### Get help
+
+* [Veritrans sandbox login](https://my.sandbox.veritrans.co.id/)
+* [Veritrans sandbox registration](https://my.sandbox.veritrans.co.id/register)
+* [Veritrans registration](https://my.veritrans.co.id/register)
+* [Veritrans documentation](http://docs.veritrans.co.id)
+* [Veritrans Opencart Documentation](http://docs.veritrans.co.id/vtweb/integration_opencart.html)
+* Technical support [support@veritrans.co.id](mailto:support@veritrans.co.id)
