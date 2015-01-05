@@ -245,6 +245,9 @@
           </tr>
         </table>
       </form>
+      <div>
+              <center><font size="1">version 2.0</font></center>
+            </div>
     </div>
     <!-- content -->
   </div>
