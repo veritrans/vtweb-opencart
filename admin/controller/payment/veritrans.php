@@ -208,9 +208,11 @@ class ControllerPaymentVeritrans extends Controller {
       }
     }
 
-    // currency conversion to IDR
+    //currency conversion to IDR
     if (!$this->request->post['veritrans_currency_conversion'] && !$this->currency->has('IDR'))
+    {
       $this->error['currency_conversion'] = $this->language->get('error_currency_conversion');
+    }    
 
     if (!$this->error) {
       return true;
