@@ -42,4 +42,5 @@ $_['error_client_key']   = 'Client Key is required!';
 $_['error_server_key']   = 'Server Key is required!';
 $_['error_currency_conversion'] = 'Currency conversion rate is required when IDR currency is not installed in the system!';
 $_['error_display_name'] = 'Please specify a name for this payment method!';
+$_['error_total'] = 'Total is required!';
 ?>
