@@ -46,6 +46,16 @@
           </tr>
           <!-- Display name -->
 
+          <tr>
+            <td><span class="required">*</span> <?php echo $entry_total; ?></td>
+            <td><input type="text" name="veritrans_total" value="<?php echo $veritrans_total; ?>" />
+              <?php if (isset($error['total'])): ?>
+                <span class="error"><?php echo $error['total']; ?></span>
+              <?php endif; ?>
+            </td>
+          </tr>
+          <!-- Total -->
+
           <tr class="v2_settings sensitive">
             <td><span class="required">*</span> <?php echo $entry_environment; ?></td>
             <td>
