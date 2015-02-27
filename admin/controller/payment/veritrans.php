@@ -169,6 +169,11 @@ class ControllerPaymentVeritrans extends Controller {
       $this->error['display_name'] = $this->language->get('error_display_name');
     }
 
+    // check for empty values
+    if (!$this->request->post['veritrans_total']) {
+      $this->error['total'] = $this->language->get('error_total');
+    }
+
     // version-specific validation
     if ($version == 1)
     {
