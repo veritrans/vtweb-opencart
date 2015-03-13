@@ -112,7 +112,9 @@
                     'cimb_clicks' => 'CIMB Clicks',
                     'mandiri_clickpay' => 'Mandiri ClickPay',
                     'bank_transfer' => 'Permata VA',
-                    'bri_epay' => 'bri-epay'
+                    'bri_epay' => 'bri-epay',
+                    'telkomsel_cash' => 'T-Cash',
+                    'xl_tunai' => 'Xl tunai'
                   );
               ?>
 
