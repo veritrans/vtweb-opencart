@@ -299,6 +299,7 @@ class ControllerPaymentVeritrans extends Controller {
    * status sent by Veritrans server.
    */
   public function payment_notification() {
+    header("HTTP/1.1 200 OK");
     error_log('payment notification');
 
     $this->load->model('checkout/order');
