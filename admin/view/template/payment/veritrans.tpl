@@ -115,7 +115,7 @@
                     'bri_epay' => 'bri-epay',
                     'telkomsel_cash' => 'T-Cash',
                     'xl_tunai' => 'Xl tunai',
-                    'mandiri_bill' => 'Mandiri Bill Payment'
+                    'echannel' => 'Mandiri Bill Payment'
                   );
               ?>
 
