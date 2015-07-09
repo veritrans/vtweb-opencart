@@ -304,7 +304,9 @@ class ControllerPaymentVeritrans extends Controller {
 
     $this->load->model('checkout/order');
     $this->load->model('payment/veritrans');
-
+    Veritrans_Config::$isProduction =
+        $this->config->get('veritrans_environment') == 'production'
+        ? true : false;
     Veritrans_Config::$serverKey = $this->config->
         get('veritrans_server_key_v2');
     $notif = new Veritrans_Notification();
