@@ -116,7 +116,9 @@
                     'telkomsel_cash' => 'T-Cash',
                     'xl_tunai' => 'Xl tunai',
                     'echannel' => 'Mandiri Bill Payment',
-                    'bbm_money'=> 'BBM Money'
+                    'bbm_money'=> 'BBM Money',
+                    'cstore'    => 'Indomaret',
+                    'indosat_dompetku' => 'Indosat Dompetku'
                   );
               ?>
 
