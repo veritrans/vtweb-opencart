@@ -1,4 +1,4 @@
-Official Veritrans OpenCart Extension
+Official Veritrans OpenCart (v1.5.x.x & lower) Extension
 ===================================
 
 Veritrans :heart: OpenCart!
@@ -19,11 +19,11 @@ This is the official Veritrans extension for the OpenCart E-commerce platform.
 
   * **Payment Notification URL** in Settings to `http://[your shop's homepage]/index.php?route=payment/veritrans/payment_notification`
 
-  * **Finish Redirect URL** in Settings to `http://[your shop's homepage]/index.php?route=checkout/success&`
+  * **Finish Redirect URL** in Settings to `http://[your shop’s homepage]/index.php?route=payment/veritrans/landing_redir&`
 
-  * **Error Redirect URL** in Settings to `http://[your shop's homepage]/index.php`
+  * **Error Redirect URL** in Settings to `http://[your shop’s homepage]/index.php?route=payment/veritrans/landing_redir&`
 
-  * **Unfinish Redirect URL** in Settings to `http://[your shop's homepage]/index.php`
+  * **Unfinish Redirect URL** in Settings to `http://[your shop’s homepage]/index.php?route=payment/veritrans/landing_redir&`
 
 #### Get help
 

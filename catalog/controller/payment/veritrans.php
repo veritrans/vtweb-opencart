@@ -284,7 +284,7 @@ class ControllerPaymentVeritrans extends Controller {
         $redirUrl = $warningUrl . $redirUrl . '&message=2';
       }
 
-      $this->cart->clear();
+      // $this->cart->clear();
       $this->redirect($redirUrl);
     }
     catch (Exception $e) {
@@ -294,13 +294,79 @@ class ControllerPaymentVeritrans extends Controller {
   }
 
   /**
+   * Landing page when payment is finished or failure or customer pressed "back" button
+   * The Cart is cleared here, so make sure customer reach this page to ensure the cart is emptied when payment succeed
+   * payment finish/unfinish/error url : 
+   * http://[your shop’s homepage]/index.php?route=payment/veritrans/landing_redir&
+   */
+  public function landing_redir() {
+    
+    $redirUrl = $this->config->get('config_ssl');
+    // error_log('redir url: '.$redirUrl); //debugan
+
+    if( isset($_GET['order_id']) && isset($_GET['transaction_status']) && ($_GET['transaction_status'] == 'capture' || $_GET['transaction_status'] == 'pending' || $_GET['transaction_status'] == 'settlement')) {
+      //if capture or pending or challenge or settlement, redirect to order received page
+      $this->cart->clear();
+      $redirUrl = $this->url->link('checkout/success&');
+      $this->response->redirect($redirUrl);
+
+    }else if( isset($_GET['order_id']) && isset($_GET['transaction_status']) && $_GET['transaction_status'] == 'deny') {
+      //if deny, redirect to order checkout page again
+      // $redirUrl = $this->url->link('checkout/cart');
+      $redirUrl = $this->url->link('payment/veritrans/failure','','SSL');
+      $this->response->redirect($redirUrl);
+
+    }else if( isset($_GET['order_id']) && !isset($_GET['transaction_status'])){ 
+      // if customer click "back" button, redirect to checkout page again
+      $redirUrl = $this->url->link('checkout/cart');
+      $this->response->redirect($redirUrl);
+    }
+    $this->response->redirect($redirUrl);
+  }
+  
+  /*
+  * redirect to payment failure using template & language (text template)
+  */
+  public function failure() {
+    $this->load->language('payment/veritrans');
+
+    $this->document->setTitle($this->language->get('heading_title'));
+
+    $this->data['heading_title'] = $this->language->get('heading_title');
+    $this->data['text_failure'] = $this->language->get('text_failure');
+
+    $this->children = array(
+      'common/column_left',
+      'common/column_right',
+      'common/content_top',
+      'common/content_bottom',
+      'common/footer',
+      'common/header'
+    );
+
+    $this->data['checkout_url'] = $this->url->link('checkout/cart');
+
+    if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/veritrans_checkout_failure.tpl')) {
+      // $this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/payment/veritrans_checkout_failure.tpl', $this->data));
+       $this->template = $this->config->get('config_template') . '/template/payment/veritrans_checkout_failure.tpl';
+    } else {
+      // $this->response->setOutput($this->load->view('default/template/payment/veritrans_checkout_failure.tpl', $this->data));
+      $this->template = 'default/template/payment/veritrans_checkout_failure.tpl';
+    }
+
+    $this->response->setOutput($this->render(true));
+
+  }
+
+
+  /**
    * Called when Veritrans server sends notification to this server.
    * It will change order status according to transaction status and fraud
    * status sent by Veritrans server.
    */
   public function payment_notification() {
     header("HTTP/1.1 200 OK");
-    error_log('payment notification');
+    // error_log('payment notification'); //debugan
 
     $this->load->model('checkout/order');
     $this->load->model('payment/veritrans');
@@ -370,6 +436,6 @@ class ControllerPaymentVeritrans extends Controller {
             . 'your Merchant Administration Portal.');
     }
 
-    error_log($logs);
+    // error_log($logs); // debugan
   }
 }
