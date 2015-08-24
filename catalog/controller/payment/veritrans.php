@@ -290,6 +290,7 @@ class ControllerPaymentVeritrans extends Controller {
     catch (Exception $e) {
       $this->data['errors'][] = $e->getMessage();
       error_log($e->getMessage());
+      echo $e->getMessage();
     }
   }
 
